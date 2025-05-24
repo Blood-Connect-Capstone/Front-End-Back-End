@@ -1,8 +1,9 @@
 const Hapi = require('@hapi/hapi');
+const authRoutes = require('./routes/exampleRoute.js');
 
 const init = async () => {
     const server = Hapi.server({
-        port: process.env.PORT || 3000,
+        port: process.env.PORT || 3001,
         host: 'localhost',
         routes: {
             cors: { origin: ['*'] }
@@ -10,8 +11,8 @@ const init = async () => {
     });
 
     // Register routes
-    // server.route(authRoutes); EXAMPLE
-
+    server.route(authRoutes);
+    
     await server.start();
     console.log('Server running on %s', server.info.uri);
 };

@@ -5,6 +5,7 @@ import router from './router'
 import { createPinia } from 'pinia'
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const options = {
     position: "top-right",
