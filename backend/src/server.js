@@ -1,4 +1,6 @@
 const Hapi = require('@hapi/hapi');
+const donorLocationRoutes = require('./routes/donorLocationRoutes');
+const bloodRequestRoutes = require('./routes/bloodRequestRoutes');
 
 const init = async () => {
     const server = Hapi.server({
@@ -10,7 +12,9 @@ const init = async () => {
     });
 
     // Register routes
-    // server.route(authRoutes); EXAMPLE
+    server.route(donorLocationRoutes);
+    server.route(bloodRequestRoutes);
+
 
     await server.start();
     console.log('Server running on %s', server.info.uri);

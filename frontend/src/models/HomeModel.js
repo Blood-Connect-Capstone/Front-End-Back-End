@@ -1,7 +1,7 @@
 export const tabs = [
   { id: 'home', icon: '/src/assets/icons/tab-1.svg', label: 'Reservasi Donor Anda', content: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Accusantium, explicabo corrupti! Voluptate expedita commodi corporis accusamus omnis illum? Quibusdam eius enim eaque repellat nobis quisquam, modi soluta quod repudiandae voluptatem!' },
-  { id: 'profile', icon: '/src/assets/icons/tab-2.svg', label: 'Lokasi Donor', content: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Accusantium, explicabo corrupti! Voluptate expedita commodi corporis accusamus omnis illum? Quibusdam eius enim eaque repellat nobis quisquam, modi soluta quod repudiandae voluptatem!' },
-  { id: 'contact', icon: '/src/assets/icons/tab-3.svg', label: 'Permintaan Darah', content: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Accusantium, explicabo corrupti! Voluptate expedita commodi corporis accusamus omnis illum? Quibusdam eius enim eaque repellat nobis quisquam, modi soluta quod repudiandae voluptatem!' }
+  { id: 'location', icon: '/src/assets/icons/tab-2.svg', label: 'Lokasi Donor', content: 'location' },
+  { id: 'request', icon: '/src/assets/icons/tab-3.svg', label: 'Permintaan Darah', content: 'request' }
 ];
 
 export const cards = [
