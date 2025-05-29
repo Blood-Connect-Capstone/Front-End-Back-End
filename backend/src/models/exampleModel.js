@@ -1,11 +1,13 @@
 const { Pool } = require('pg');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
+console.log(process.env.database_url);
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 module.exports = {
     async getAll() {
-        const { rows } = await pool.query('SELECT id, name, email, gender, blood_type FROM users');
+        const { rows } = await pool.query('SELECT id, name, email, gender, blood_type, rhesus FROM users');
         return rows;
     },
 
@@ -14,12 +16,24 @@ module.exports = {
 
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
+        
 
         const query = 'INSERT INTO users(name, email, password, gender, blood_type, rhesus) VALUES($1, $2, $3, $4, $5, $6) RETURNING id';
         const values = [name, email, hashedPassword, gender, bloodType, rhesus];
 
         const result = await pool.query(query, values);
         return result.rows[0];
+    },
+
+        async login(email, password) {
+        const user = await this.getUserByEmail(email);
+        if (!user) return null;
+    
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return null;
+
+        const { password: _, ...userWithoutPassword } = user;
+        return userWithoutPassword;
     },
 
     async update(id, user) {

@@ -20,5 +20,10 @@ module.exports = [
         method: 'DELETE',
         path: '/api/v1/users/{id}',
         handler: examplePresenter.deleteUser,
+    },
+    {
+        method: 'POST',
+        path: '/api/v1/users/login',
+        handler: examplePresenter.loginUser,
     }
 ];
