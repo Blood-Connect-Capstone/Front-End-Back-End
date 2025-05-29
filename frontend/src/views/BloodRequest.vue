@@ -1,206 +1,87 @@
 <script setup>
-import axios from 'axios';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
+import { BloodRequestPresenter } from '../presenters/BloodRequestPresenter';
 
-const bloodRequests = ref([]);
-const userLocation = ref({ lat: null, lng: null });
-let map = null; // Store map instance
+const {
+    bloodRequests,
+    userLocation,
+    userBloodType,
+    loadBloodRequests,
+    setUserLocation,
+    openRequestDetails,
+    navigateToHospital,
+    getFormattedDate,
+    getUrgencyStyle,
+    getUrgencyLabel
+} = BloodRequestPresenter();
 
-const userBloodType = "AB+";
+let map = null;
 
-const openRequestDetails = (request) => {
-    console.log('Opening details for:', request.patientName);
-};
-
-const navigateToHospital = (request) => {
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${request.lat},${request.lng}`;
-    window.open(url, '_blank');
-};
-
-const openWhatsAppChat = (phoneNumber) => {
-    const url = `https://wa.me/${phoneNumber}`;
-    window.open(url, '_blank');
-};
-
-const getUrgencyClass = (urgency) => {
-    switch (urgency) {
-        case 'urgent':
-            return 'bg-danger text-white';
-        case 'high':
-            return 'bg-warning text-dark';
-        case 'medium':
-            return 'bg-info text-white';
-        default:
-            return 'bg-secondary text-white';
-    }
-};
-
-const getUrgencyText = (urgency) => {
-    switch (urgency) {
-        case 'urgent':
-            return 'Sangat Mendesak';
-        case 'high':
-            return 'Mendesak';
-        case 'medium':
-            return 'Sedang';
-        default:
-            return 'Biasa';
-    }
-};
-
-const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 1) {
-        return 'Hari ini';
-    } else if (diffDays === 2) {
-        return 'Kemarin';
-    } else {
-        return `${diffDays} hari lalu`;
-    }
-};
-
-// Fungsi Haversine untuk hitung jarak (dalam km)
-function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Radius bumi dalam km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-}
-
-const fetchData = async () => {
-    try {
-        const response = await axios.get('http://localhost:3000/api/v1/blood-requests', {
-            params: {
-                bloodType: userBloodType,
-            }
-        });
-
-        console.log('Fetched blood requests:', response.data.data);
-
-        let places = response.data.data.map(request => ({
-            id: request.id,
-            patientName: request.requester_name,
-            bloodType: request.blood_type,
-            urgency: request.urgency,
-            requestDate: request.request_date,
-            hospitalName: request.location_name,
-            neededUnits: request.quantity,
-            phoneNumber: request.phone,
-            address: request.address,
-            lat: request.lat,
-            lng: request.lng
-        }));
-
-        if (userLocation.value.lat && userLocation.value.lng) {
-            places.forEach(place => {
-                place.distance = getDistanceFromLatLonInKm(
-                    userLocation.value.lat,
-                    userLocation.value.lng,
-                    place.lat,
-                    place.lng
-                ).toFixed(2);
-            });
-            places.sort((a, b) => a.distance - b.distance);
-        }
-
-        bloodRequests.value = places;
-    } catch (error) {
-        console.error('Error fetching blood requests:', error);
-    }
-};
-
-// Function to initialize map
 const initializeMap = () => {
-    // Clean up existing map if it exists
     if (map) {
         map.remove();
         map = null;
     }
 
-    // Clear the map container
     const mapContainer = document.getElementById('map-blood-request');
     if (mapContainer) {
         mapContainer.innerHTML = '';
     }
 
-    // Wait a bit before creating new map
     setTimeout(() => {
         const defaultLat = userLocation.value.lat || -6.2000;
         const defaultLng = userLocation.value.lng || 106.8167;
 
         map = L.map('map-blood-request').setView([defaultLat, defaultLng], 12);
-        
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Fix map size after initialization
         setTimeout(() => {
             map.invalidateSize();
         }, 300);
 
-        // Add user location marker if available
         if (userLocation.value.lat && userLocation.value.lng) {
             L.marker([userLocation.value.lat, userLocation.value.lng], { icon: userIcon })
                 .addTo(map)
-                .bindPopup('Lokasi Anda')
                 .openPopup();
         }
 
-        // Add blood request markers
-        bloodRequests.value.forEach(place => {
-            L.marker([place.lat, place.lng], { icon: bloodRequestIcon })
+        bloodRequests.value.forEach(request => {
+            L.marker([request.lat, request.lng], { icon: bloodRequestIcon })
                 .addTo(map)
-                .bindPopup(`<b>${place.patientName}</b><br>${place.hospitalName}<br>${place.address}`);
+                .bindPopup(`<b>${request.patientName}</b><br>${request.hospitalName}<br>${request.address}`);
         });
     }, 100);
 };
 
-const openPlaceDetails = (place) => {
-    console.log('Opening details for:', place.name);
-};
-
-const navigateToMaps = (place) => {
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}`;
-    window.open(url, '_blank');
-};
-
-const openReservationModal = (place) => {
-    console.log('Opening reservation modal for:', place.name);
+const refreshData = async () => {
+    await loadBloodRequests();
+    initializeMap();
 };
 
 onMounted(async () => {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
-                userLocation.value.lat = position.coords.latitude;
-                userLocation.value.lng = position.coords.longitude;
-                await fetchData();
+                setUserLocation(position.coords.latitude, position.coords.longitude);
+                await loadBloodRequests();
                 initializeMap();
             },
             async (error) => {
                 console.warn('Geolocation error:', error);
-                await fetchData();
+                await loadBloodRequests();
                 initializeMap();
             }
         );
     } else {
-        await fetchData();
+        await loadBloodRequests();
         initializeMap();
     }
 });
 
-// Clean up map when component is unmounted
 onUnmounted(() => {
     if (map) {
         map.remove();
@@ -233,12 +114,6 @@ const bloodRequestIcon = L.divIcon({
     iconSize: [32, 32],
     iconAnchor: [16, 16]
 });
-
-// Updated refresh function
-const refreshData = async () => {
-    await fetchData();
-    initializeMap();
-};
 </script>
 
 <template>
@@ -261,7 +136,7 @@ const refreshData = async () => {
             </div>
         </div>
 
-        <!-- Right Panel - Blood Requests -->
+        <!-- Right Panel -->
         <div class="col-12 col-lg-4">
             <div class="bg-white rounded overflow-hidden h-100"
                 style="box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10);">
@@ -277,9 +152,9 @@ const refreshData = async () => {
                                     <div class="flex-grow-1">
                                         <div class="d-flex align-items-center gap-2 mb-1">
                                             <span class="fw-medium text-danger small">{{ request.patientName }}</span>
-                                            <span :class="getUrgencyClass(request.urgency)"
+                                            <span :class="getUrgencyStyle(request.urgency)"
                                                 class="badge badge-sm px-2 py-1" style="font-size: 0.65rem;">
-                                                {{ getUrgencyText(request.urgency) }}
+                                                {{ getUrgencyLabel(request.urgency) }}
                                             </span>
                                         </div>
                                         <div class="mt-1 d-flex align-items-center gap-2">
@@ -287,7 +162,8 @@ const refreshData = async () => {
                                                 style="font-size: 0.7rem;">
                                                 {{ request.bloodType }}
                                             </span>
-                                            <span class="text-muted small">{{ formatDate(request.requestDate) }}</span>
+                                            <span class="text-muted small">{{ getFormattedDate(request.requestDate)
+                                                }}</span>
                                         </div>
                                         <div class="mt-1 text-muted small text-truncate">{{ request.hospitalName }}
                                         </div>
@@ -331,12 +207,5 @@ const refreshData = async () => {
 
 .list-group-item-action:hover {
     background-color: #f8f9fa !important;
-}
-
-.btn-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    line-height: 1.5;
-    border-radius: 0.2rem;
 }
 </style>

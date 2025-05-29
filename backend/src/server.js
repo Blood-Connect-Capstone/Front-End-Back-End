@@ -15,6 +15,7 @@ const init = async () => {
     // Register routes
     server.route(donorLocationRoutes);
     server.route(bloodRequestRoutes);
+    server.route(authRoutes);
 
 
     await server.start();

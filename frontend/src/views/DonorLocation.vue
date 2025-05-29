@@ -1,131 +1,42 @@
 <script setup>
-import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
+import { DonorLocationPresenter } from '../presenters/DonorLocationPresenter';
 
-const nearbyPlaces = ref([]);
-const userLocation = ref({ lat: null, lng: null });
+const { nearbyPlaces, userLocation, loadDonorLocations, setUserLocation } = DonorLocationPresenter();
 
-// Fungsi Haversine untuk hitung jarak (dalam km)
-function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Radius bumi dalam km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-}
+const initializeMap = (lat, lng) => {
+    const map = L.map('map').setView([lat, lng], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+    }).addTo(map);
 
-const fetchData = async () => {
-    const response = await axios.get('http://localhost:3000/api/v1/donor-locations');
-    let places = response.data.data.map(place => ({
-        name: place.name,
-        address: place.address,
-        hours: place.hours,
-        lat: place.lat,
-        lng: place.lng,
-        distance: place.distance // bisa di-overwrite di bawah
-    }));
+    setTimeout(() => map.invalidateSize(), 300);
 
-    // Jika lokasi user sudah didapat, hitung jarak dan urutkan
-    if (userLocation.value.lat && userLocation.value.lng) {
-        places.forEach(place => {
-            place.distance = getDistanceFromLatLonInKm(
-                userLocation.value.lat,
-                userLocation.value.lng,
-                place.lat,
-                place.lng
-            ).toFixed(2);
-        });
-        places.sort((a, b) => a.distance - b.distance);
-    }
+    L.marker([lat, lng], { icon: userIcon }).addTo(map);
 
-    nearbyPlaces.value = places;
-};
-
-const openPlaceDetails = (place) => {
-    console.log('Opening details for:', place.name);
-};
-
-const navigateToMaps = (place) => {
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}`;
-    window.open(url, '_blank');
-};
-
-const openReservationModal = (place) => {
-    console.log('Opening reservation modal for:', place.name);
+    nearbyPlaces.value.forEach(place => {
+        L.marker([place.lat, place.lng], { icon: donorIcon })
+            .addTo(map)
+            .bindPopup(`<b>${place.name}</b><br>${place.address}`);
+    });
 };
 
 onMounted(async () => {
-    // Dapatkan lokasi user
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
-            userLocation.value.lat = position.coords.latitude;
-            userLocation.value.lng = position.coords.longitude;
-
-            await fetchData();
-
-            const map = L.map('map').setView([userLocation.value.lat, userLocation.value.lng], 12);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            // Tambahkan ini agar map benar-benar render dengan benar
-            setTimeout(() => {
-                map.invalidateSize();
-            }, 300);
-
-            L.marker([userLocation.value.lat, userLocation.value.lng], { icon: userIcon })
-                .addTo(map)
-                .openPopup();
-
-            nearbyPlaces.value.forEach(place => {
-                L.marker([place.lat, place.lng], { icon: donorIcon })
-                    .addTo(map)
-                    .bindPopup(`<b>${place.name}</b><br>${place.address}`);
-            });
+            setUserLocation(position.coords.latitude, position.coords.longitude);
+            await loadDonorLocations();
+            initializeMap(position.coords.latitude, position.coords.longitude);
         }, async () => {
-            await fetchData();
-
-            const map = L.map('map').setView([-6.2000, 106.8167], 12);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            setTimeout(() => {
-                map.invalidateSize();
-            }, 300);
-
-            nearbyPlaces.value.forEach(place => {
-                const marker = L.marker([place.lat, place.lng], { icon: donorIcon }).addTo(map);
-                marker.bindPopup(`<b>${place.name}</b><br>${place.address}`);
-            });
+            await loadDonorLocations();
+            initializeMap(-6.2, 106.8167);
         });
     } else {
-        await fetchData();
-
-        const map = L.map('map').setView([-6.2000, 106.8167], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        setTimeout(() => {
-            map.invalidateSize();
-        }, 300);
-
-        nearbyPlaces.value.forEach(place => {
-            const marker = L.marker([place.lat, place.lng], { icon: donorIcon }).addTo(map);
-            marker.bindPopup(`<b>${place.name}</b><br>${place.address}`);
-        });
+        await loadDonorLocations();
+        initializeMap(-6.2, 106.8167);
     }
 });
 
-// Custom icon untuk lokasi user (Bootstrap style)
 const userIcon = L.divIcon({
     html: `
         <div class="d-flex align-items-center justify-content-center rounded-circle border border-white shadow" 
@@ -138,7 +49,6 @@ const userIcon = L.divIcon({
     iconAnchor: [16, 16]
 });
 
-// Custom icon untuk lokasi donor (Bootstrap style + SVG)
 const donorIcon = L.divIcon({
     html: `
         <div class="d-flex align-items-center justify-content-center rounded-circle border border-white shadow" 
@@ -175,9 +85,8 @@ const donorIcon = L.divIcon({
             </div>
         </div>
 
-        <!-- Right Panel - Lists -->
+        <!-- Right Panel -->
         <div class="col-12 col-lg-4">
-            <!-- Donor Locations Tab -->
             <div class="bg-white rounded overflow-hidden h-100"
                 style="box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10);">
                 <div class="p-3 border-bottom" style="background: #f8f9fa;">

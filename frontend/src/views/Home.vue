@@ -20,6 +20,8 @@ onMounted(() => {
 </script>
 
 <template>
+    <Navbar />
+    
     <main>
         <nav>
             <div class="nav nav-tabs" role="tablist">
@@ -98,7 +100,7 @@ onMounted(() => {
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
 * {
-  font-family: "Inter", sans-serif;
+    font-family: "Inter", sans-serif;
 }
 
 main {
@@ -106,12 +108,12 @@ main {
 }
 
 .nav-tabs {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  gap: 35px;
-  border-bottom: 1px solid #dee2e6;
-  justify-content: flex-start;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 35px;
+    border-bottom: 1px solid #dee2e6;
+    justify-content: flex-start;
 }
 
 .tab-img {
@@ -124,30 +126,30 @@ main {
 }
 
 .nav-tabs .nav-link {
-  border: none;
-  background: none;
-  color: #828282;
-  position: relative;
-  padding: 16px;
-  margin: 0;
-  font-size: 13px;
-  line-height: 20px;
+    border: none;
+    background: none;
+    color: #828282;
+    position: relative;
+    padding: 16px;
+    margin: 0;
+    font-size: 13px;
+    line-height: 20px;
 }
 
 .nav-tabs .nav-link.active {
-  color: #e7000b;
-  font-weight: bold;
+    color: #e7000b;
+    font-weight: bold;
 }
 
 .nav-tabs .nav-link.active::after {
-  content: "";
-  display: block;
-  height: 1.6px;
-  background: #e7000b;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+    content: "";
+    display: block;
+    height: 1.6px;
+    background: #e7000b;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .tab-content-desktop {
@@ -165,12 +167,12 @@ main {
 }
 
 .container-header {
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .card {
-  border: none;
+    border: none;
 }
 
 .card-body {
@@ -188,8 +190,8 @@ main {
 }
 
 .card-text {
-  font-size: 11px;
-  color: #6a7282;
+    font-size: 11px;
+    color: #6a7282;
 }
 
 .tab-pane-mobile {
@@ -229,8 +231,8 @@ main {
 }
 
 @media (max-width: 1200px) {
-  main {
-    margin: 0 24px;
-  }
+    main {
+        margin: 0 24px;
+    }
 }
 </style>

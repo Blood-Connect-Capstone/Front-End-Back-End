@@ -16,7 +16,7 @@ module.exports = {
 
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        
+
 
         const query = 'INSERT INTO users(name, email, password, gender, blood_type, rhesus) VALUES($1, $2, $3, $4, $5, $6) RETURNING id';
         const values = [name, email, hashedPassword, gender, bloodType, rhesus];
@@ -25,10 +25,10 @@ module.exports = {
         return result.rows[0];
     },
 
-        async login(email, password) {
+    async login(email, password) {
         const user = await this.getUserByEmail(email);
         if (!user) return null;
-    
+
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return null;
 
