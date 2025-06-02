@@ -4,8 +4,8 @@ export async function donorForm1Presenter(formData, router) {
   try {
     const data = await form1Data(formData);
     if (data.success) {
-      alert("Form submitted successfully!");
-      router.push("/home");
+      alert("Form submitted successfully! Next step.");
+      router.push("/donorform2");
     } else {
       alert(data.message || "Failed to submit form.");
     }

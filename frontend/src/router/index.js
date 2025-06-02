@@ -2,12 +2,17 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "@/views/Home.vue";
 import Register from "@/views/Register.vue";
 import Login from "@/views/Login.vue";
+import DonorForm1 from "@/views/DonorForm1.vue";
+import DonorForm2 from "@/views/DonorForm2.vue";
+import Rewards from "@/views/Rewards.vue";
 
 const routes = [
   { path: "/", name: "Login", component: Login },
   { path: "/home", name: "Home", component: Home },
-  { path: "/register", name:"Register", component: Register },
-  { path: "/donorform1", name: "DonorForm1", component: () => import("@/views/DonorForm1.vue") },
+  { path: "/register", name: "Register", component: Register },
+  { path: "/donorform1", name: "DonorForm1", component: DonorForm1 },
+  { path: "/donorform2", name: "DonorForm2", component: DonorForm2 },
+  { path: "/rewards", name: "Rewards", component: Rewards },
 ];
 
 const router = createRouter({

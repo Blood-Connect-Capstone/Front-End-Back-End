@@ -122,7 +122,7 @@
         </div>
       </div>
       <p class="text-muted mb-4">Pastikan semua data yang diisi sudah benar sebelum mengirimkan kuesioner.</p>
-      <button type="submit" class="btn btn-danger w-100">Submit</button>
+      <button type="submit" class="btn btn-danger w-100">Selanjutnya</button>
     </form>
   </div>
   <Footer />
@@ -156,10 +156,7 @@ const form = ref({
   last_donation_date: "",
   last_donation_location: "",
   previous_donor_card_number: "",
-}
-);
-
-
+});
 
 const handleSubmit = async () => {
   const dob = new Date(form.value.date_of_birth);

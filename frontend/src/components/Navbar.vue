@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-      <a class="navbar-brand d-flex" href="#">
+      <a class="navbar-brand d-flex" href="/home">
         <img class="logo" src="/src/assets/images/logo.svg" alt="" />
         <div class="d-flex flex-column align-items-start">
           <span class="title">BloodConnect</span>
@@ -19,7 +19,7 @@
             <a class="nav-link menu" aria-current="page" href="#">Profile</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link menu" href="#">Rewards</a>
+            <a class="nav-link menu" href="/rewards">Rewards</a>
           </li>
           <li class="nav-item">
             <a class="nav-link menu" href="#">Community</a>
@@ -53,19 +53,16 @@ function handleLogout() {
 }
 
 .navbar {
-  padding: 16px 0;
+  padding: 24px 0;
   box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1000;
-  /* Tambahkan z-index tinggi untuk navbar */
   background-color: white;
-  /* Pastikan ada background color */
 }
 
 .navbar>.container-fluid {
-  padding: 0 152px;
+  padding: 0 80px;
   z-index: 1001;
-  /* Z-index lebih tinggi untuk container */
 }
 
 .logo {
