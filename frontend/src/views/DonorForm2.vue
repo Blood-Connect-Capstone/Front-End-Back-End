@@ -26,17 +26,12 @@
           :key="index"
           class="mb-5 box"
         >
-          <!-- Question Label with Auto-Increment Circle -->
           <label
             class="form-label d-flex align-items-start mb-3 fw-bold question"
           >
             <span class="circle-number me-3 flex-shrink-0">{{ index + 1 }}</span>
             <span class="question-text flex-grow-1">{{ question }}</span>
           </label>
-
-
-
-          <!-- Answer Options -->
           <div class="d-flex flex-column gap-3">
             <div
               v-for="option in options"

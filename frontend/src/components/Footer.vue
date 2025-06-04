@@ -3,23 +3,26 @@
     <!-- Footer Bootstrap -->
     <footer class="bg-dark text-white py-4">
         <div class="container">
-            <div class="row">
+            <div class="row justify-content-between">
 
                 <!-- About -->
                 <div class="col-md-4 mb-3">
-                    <h5>About Us</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vehicula metus at quam.</p>
-                </div>
-
-                <!-- Quick Links -->
-                <div class="col-md-4 mb-3">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white text-decoration-none">Home</a></li>
-                        <li><a href="#" class="text-white text-decoration-none">Services</a></li>
-                        <li><a href="#" class="text-white text-decoration-none">Contact</a></li>
-                        <li><a href="#" class="text-white text-decoration-none">About</a></li>
-                    </ul>
+                    <h5>BloodConnect</h5>
+                    <p>Temukan donor & permintaan darah di sekitar Anda.</p>
+                    <div class="d-flex gap-4 mt-3">
+                        <a href="https://www.facebook.com" target="_blank">
+                            <img src="/src/assets/icons/facebook.svg" alt="Facebook" />
+                        </a>
+                        <a href="https://www.linkedin.com" target="_blank">
+                            <img src="/src/assets/icons/linkedin.svg" alt="LinkedIn" />
+                        </a>
+                        <a href="https://www.youtube.com" target="_blank">
+                            <img src="/src/assets/icons/youtube.svg" alt="YouTube" />
+                        </a>
+                        <a href="https://www.instagram.com" target="_blank">
+                            <img src="/src/assets/icons/instagram.svg" alt="Instagram" />
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Contact Info -->
@@ -33,7 +36,7 @@
             </div>
 
             <div class="text-center pt-3 border-top border-secondary">
-                &copy; 2025 YourCompany. All rights reserved.
+                2025 &copy; All rights reserved.
             </div>
         </div>
     </footer>

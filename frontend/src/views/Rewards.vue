@@ -53,8 +53,8 @@ onMounted(() => {
               <p class="card-description">{{ reward.description }}</p>
             </div>
             <div class="card-section d-flex justify-content-between align-items-center px-3 pb-3">
-              <p class="card-text mb-0">{{ reward.points }} Pts</p>
-              <button class="redeem btn" @click="claimReward(reward.id)">Redeem >></button>
+              <p class="card-text mb-0 sm:text-sm xs:text-xs">{{ reward.points }} Pts</p>
+              <button class="redeem btn sm:px-4 sm:py-2 sm:text-sm xs:px-3 xs:py-1 xs:text-xs" @click="claimReward(reward.id)">Redeem -></button>
             </div>
           </div>
         </div>

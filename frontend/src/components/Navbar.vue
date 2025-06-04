@@ -55,7 +55,8 @@ function handleLogout() {
 .navbar {
   padding: 24px 0;
   box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 1000;
   background-color: white;
 }
@@ -119,11 +120,17 @@ button.nav-link.login.logout-btn {
 .menu {
   color: black;
 }
+.menu:hover {
+  color: #e7000b;
+}
 
 .login {
   background-color: black;
   color: white;
   border-radius: 8px;
+}
+.login:hover {
+  color: white;
 }
 
 @media (max-width: 1200px) {
