@@ -69,7 +69,6 @@ const resetScreening = async () => {
 
     <form v-else @submit.prevent="handleSubmit">
       <div v-for="(question, index) in questions" :key="index" class="mb-5 box">
-        <!-- Question Label with Auto-Increment Circle -->
         <label class="form-label d-flex align-items-start mb-3 fw-bold question">
           <span class="circle-number me-3 flex-shrink-0">{{ index + 1 }}</span>
           <span class="question-text flex-grow-1">{{ question.text }}</span>
@@ -77,7 +76,6 @@ const resetScreening = async () => {
 
 
 
-        <!-- Answer Options -->
         <div class="d-flex flex-column gap-3">
           <div v-for="option in options" :key="option" class="p-3 border rounded text-start option"
             :class="{ 'selected': answers[index]?.answer === option }" @click="selectOption(index, option)"
