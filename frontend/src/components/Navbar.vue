@@ -1,13 +1,13 @@
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-      <a class="navbar-brand d-flex" href="/home">
+      <router-link class="navbar-brand d-flex" to="/home">
         <img class="logo" src="/src/assets/images/logo.svg" alt="" />
         <div class="d-flex flex-column align-items-start">
           <span class="title">BloodConnect</span>
           <!-- <small class="text">Temukan donor & permintaan darah di sekitar Anda</small> -->
         </div>
-      </a>
+      </router-link>
       <button class="navbar-toggler small-toggler" type="button" data-bs-toggle="collapse"
         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
         aria-label="Toggle navigation">
@@ -15,15 +15,15 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link menu" aria-current="page" href="#">Profile</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link menu" href="/rewards">Rewards</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link menu" href="#">Community</a>
-          </li>
+            <li class="nav-item">
+            <router-link class="nav-link menu" aria-current="page" to="#">Profile</router-link>
+            </li>
+            <li class="nav-item">
+            <router-link class="nav-link menu" to="/rewards">Rewards</router-link>
+            </li>
+            <li class="nav-item">
+            <router-link class="nav-link menu" to="/community">Community</router-link>
+            </li>
           <li class="nav-item">
             <!-- <a class="nav-link login" href="#">Logout</a> -->
             <button class="nav-link login logout-btn" type="button" @click="handleLogout">Logout</button>

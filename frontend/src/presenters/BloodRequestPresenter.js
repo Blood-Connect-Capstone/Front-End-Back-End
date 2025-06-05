@@ -17,7 +17,7 @@ export function BloodRequestPresenter() {
             const requests = await fetchBloodRequests(userBloodType);
 
             let mappedRequests = requests.map(request => ({
-                id: request.id,
+                id: request.request_id,
                 patientName: request.requester_name,
                 bloodType: request.blood_type,
                 urgency: request.urgency,
@@ -40,10 +40,10 @@ export function BloodRequestPresenter() {
                         request.lng
                     ).toFixed(2);
                 });
+                
                 mappedRequests.sort((a, b) => a.distance - b.distance);
             }
 
-            console.log('Fetched blood requests:', mappedRequests);
             bloodRequests.value = mappedRequests;
         } catch (error) {
             console.error('Error loading blood requests:', error);

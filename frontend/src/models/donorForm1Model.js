@@ -1,14 +1,24 @@
-export async function form1Data(formData) {
-  const res = await fetch("http://localhost:3001/api/v1/donorform1", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData),
-  });
+import axios from "axios";
 
-  if (!res.ok) {
-    throw new Error("Failed to submit form data");
+export async function form1Data(formData) {
+  const formDataObj = {
+    user_id: formData.user_id,
+    weight: formData.weight,
+    height: formData.height,
+    total_donor: formData.total_donor,
+    last_donor_date: formData.last_donor_date,
+    last_donor_place: formData.last_donor_place,
+    donor_card_number: formData.donor_card_number,
+    status: 'pending',
+    screening_status: 'tahap_1',
+  };
+
+  if (formData.reservation_type == 'request') {
+    formDataObj.blood_request_id = formData.reservation_refer_id;
+  } else {
+    formDataObj.donor_location_id = formData.reservation_refer_id;
   }
 
-  const data = await res.json();
-  return data;
+  const response = await axios.post(import.meta.env.VITE_API_URL + '/donor-reservations', formDataObj);
+  return response.data;
 }

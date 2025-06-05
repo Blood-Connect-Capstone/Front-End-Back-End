@@ -67,6 +67,7 @@ onMounted(async () => {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
                 setUserLocation(position.coords.latitude, position.coords.longitude);
+
                 await loadBloodRequests();
                 initializeMap();
             },
@@ -118,7 +119,6 @@ const bloodRequestIcon = L.divIcon({
 
 <template>
     <div class="row g-4">
-        <!-- Map Container -->
         <div class="col-12 col-lg-8">
             <div class="bg-white rounded overflow-hidden"
                 style="height: 560px; box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10);">
@@ -136,7 +136,6 @@ const bloodRequestIcon = L.divIcon({
             </div>
         </div>
 
-        <!-- Right Panel -->
         <div class="col-12 col-lg-4">
             <div class="bg-white rounded overflow-hidden h-100"
                 style="box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10);">
@@ -181,10 +180,9 @@ const bloodRequestIcon = L.divIcon({
                                             @click.stop="navigateToHospital(request)">
                                             Rute
                                         </button>
-                                        <button class="btn btn-danger btn-sm"
-                                            @click.stop="openReservationModal(request)">
-                                            Reservasi Donor
-                                        </button>
+                                        <router-link :to="`/reservation/request/${request.id}`" class="btn btn-danger btn-sm">
+                                            Reservasi
+                                        </router-link>
                                     </div>
                                 </div>
                             </div>

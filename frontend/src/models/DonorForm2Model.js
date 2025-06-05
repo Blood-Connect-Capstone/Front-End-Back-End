@@ -1,3 +1,6 @@
+import { getCurrentUserWithProfile } from "@/composables/supabaseClient";
+import axios from "axios";
+
 // /model/DonorModel.js
 export const DonorForm2Model = {
   options: ['Ya', 'Tidak', 'Mungkin'],
@@ -18,4 +21,42 @@ export const DonorForm2Model = {
     'Apakah Anda memiliki penyakit hati kronis atau gangguan fungsi hati yang serius?',
     'Apakah Anda pernah didiagnosis menderita Polycythaemia Vera, yaitu kondisi ketika jumlah sel darah merah di dalam sel tubuh terlalu banyak?'
   ]
+}
+
+export async function fetchQuestionsStage2() {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/questionnaire-questions`);
+
+    const stage2Questions = response.data.data.filter(question => question.stage == 2);
+
+    return stage2Questions.map(question => ({
+      id: question.id,
+      text: question.text
+    }));
+  } catch (error) {
+    console.error('Error fetching questions:', error);
+    return [];
+  }
+}
+
+export async function saveAnswer(answers) {
+  try {
+    const user = await getCurrentUserWithProfile();
+
+    const formattedAnswers = answers.map(answer => ({
+      questionId: answer.questionId,
+      optionId: null,
+      manualInput: answer.answer
+    }));
+
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/questionnaire-user-answers/bulk`, {
+      user_id: user.user.id,
+      answers: formattedAnswers
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error saving answers:', error);
+    throw error;
+  }
 }

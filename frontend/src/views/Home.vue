@@ -21,7 +21,7 @@ onMounted(() => {
 
 <template>
     <Navbar />
-    
+
     <main>
         <nav>
             <div class="nav nav-tabs" role="tablist">

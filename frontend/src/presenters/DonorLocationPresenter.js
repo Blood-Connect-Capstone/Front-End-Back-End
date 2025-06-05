@@ -9,6 +9,7 @@ export function DonorLocationPresenter() {
         const places = await fetchDonorLocations();
 
         let mapped = places.map(place => ({
+            id: place.id,
             name: place.name,
             address: place.address,
             hours: place.hours,
