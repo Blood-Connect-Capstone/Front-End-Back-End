@@ -1,37 +1,39 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
-export const supabaseAnon = createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_ANON_KEY,
-);
+export const supabaseAnon = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
 
 export const getAuthToken = async () => {
-    const { data } = await supabaseAnon.auth.getSession();
-    return data.session?.access_token;
+  const { data } = await supabaseAnon.auth.getSession();
+  return data.session?.access_token;
 };
 
 export const getAuthHeaders = async () => {
-    const token = await getAuthToken();
-    return {
-        Authorization: `Bearer ${token}`
-    };
+  const token = await getAuthToken();
+  return {
+    Authorization: `Bearer ${token}`,
+  };
 };
 
-export const getCurrentUserWithProfile = async () => {
-    const { data: sessionData } = await supabaseAnon.auth.getSession();
-    const user = sessionData.session?.user;
+// export async function getCurrentUserWithProfile() {
+//   const {
+//     data: { user },
+//   } = await supabaseAnon.auth.getUser();
+//   if (!user) return { user: null, profile: null };
+//   const { data: profile } = await supabaseAnon.from("profiles").select("*").eq("user_id", user.id).single();
+//   return { user, profile };
+// }
+export async function getCurrentUserWithProfile() {
+  const { data: { user } } = await supabaseAnon.auth.getUser();
+  if (!user) return { user: null, profile: null };
 
-    if (!user) return { user: null };
+  const { data: profile, error } = await supabaseAnon
+    .from("profiles")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
 
-    const { data: profile, error } = await supabaseAnon
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
+  if (error) throw error;
 
-    return {
-        user,
-        name: profile?.name || 'Pengguna',
-        profile: profile || null
-    };
-};
+  // Merge email from auth into profile object
+  return { user, profile: { ...profile, email: user.email } };
+}

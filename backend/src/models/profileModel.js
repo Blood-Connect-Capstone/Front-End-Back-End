@@ -46,7 +46,8 @@ module.exports = {
         last_donation_date = null,
         last_donation_location = null,
         previous_donor_card_number = null,
-        points = 0
+        points = 0,
+        photo = null
     }) {
         const { data, error } = await supabase
             .from('profiles')
@@ -71,7 +72,8 @@ module.exports = {
                 last_donation_date,
                 last_donation_location,
                 previous_donor_card_number,
-                points
+                points,
+                photo
             }])
             .select()
             .single();

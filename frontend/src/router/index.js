@@ -8,6 +8,7 @@ import Rewards from "@/views/Rewards.vue";
 import DonorForm3 from "@/views/DonorForm3.vue";
 import Community from "@/views/Community.vue";
 import DonorReservation from "@/views/DonorReservation.vue";
+import Profile from "@/views/Profile.vue";
 
 const routes = [
   { path: "/", name: "Login", component: Login },
@@ -18,6 +19,7 @@ const routes = [
   { path: "/donorform3", name: "DonorForm3", component: DonorForm3 },
   { path: "/rewards", name: "Rewards", component: Rewards },
   { path: "/community", name: "Community", component: Community },
+  { path: "/profile", name: "Profile", component: Profile },
   {
     path: "/reservation/:type/:id",
     name: "DonorReservation",
