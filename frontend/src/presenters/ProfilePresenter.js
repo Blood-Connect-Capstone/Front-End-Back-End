@@ -1,19 +1,25 @@
 import { ref, onMounted } from "vue";
 import { useToast } from "vue-toastification";
-import { getProfile, getProfileById, updateProfileImage } from "@/models/ProfileModel";
+import { getDonorHistoryByUserId, getProfile, getProfileById, updateProfileImage } from "@/models/ProfileModel";
+import { getCurrentUserWithProfile } from "@/composables/supabaseClient";
 
 export function useProfilePresenter() {
   const toast = useToast();
   const profile = ref(null);
+  const donorHistory = ref([]);
   const isLoading = ref(false);
   const error = ref(null);
-
   const fetchProfile = async () => {
     isLoading.value = true;
     error.value = null;
     try {
       const data = await getProfile();
-      profile.value = { ...data }; 
+      // Ensure the donor_history is properly processed
+      const processedData = {
+        ...data,
+        donor_history: Array.isArray(data.donor_history) ? data.donor_history : []
+      };
+      profile.value = processedData;
     } catch (err) {
       error.value = "Gagal memuat profil. Silakan coba lagi nanti.";
       console.error("Fetch profile error:", err);
@@ -37,13 +43,12 @@ export function useProfilePresenter() {
       console.error("Update image error:", err);
     }
   };
-
   const fetchProfileById = async (userId) => {
     isLoading.value = true;
     error.value = null;
     try {
       const data = await getProfileById(userId);
-      profile.value = { ...data }; // Spread to ensure reactivity
+      donorHistory.value = data.donor_history || [];
     } catch (err) {
       error.value = "Gagal memuat profil. Silakan coba lagi nanti.";
       console.error("Fetch profile by ID error:", err);
@@ -51,6 +56,21 @@ export function useProfilePresenter() {
       isLoading.value = false;
     }
   };
+  const getDonorHistory = async () => {
+    isLoading.value = true;
+    error.value = null;
+    const user = await getCurrentUserWithProfile();
+
+    try {
+      const data = await getDonorHistoryByUserId(user.user.id);
+      return data;
+    } catch (err) {
+      error.value = "Gagal memuat riwayat donor. Silakan coba lagi nanti.";
+      console.error("Fetch donor history error:", err);
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   onMounted(() => {
     fetchProfile();
@@ -58,10 +78,12 @@ export function useProfilePresenter() {
 
   return {
     profile,
+    donorHistory,
     isLoading,
     error,
     fetchProfile,
     updateImage,
     fetchProfileById,
+    getDonorHistory
   };
 }

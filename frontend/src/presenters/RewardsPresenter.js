@@ -1,6 +1,7 @@
 // presenters/useRewardsPresenter.js
 import { reactive, toRefs } from 'vue'
-import { RewardsModel } from '../models/RewardsModel'
+import { getUserPoint, RewardsModel } from '../models/RewardsModel'
+
 
 export function RewardsPresenter() {
   const model = new RewardsModel()
@@ -18,9 +19,15 @@ export function RewardsPresenter() {
     alert(result)
   }
 
+  async function getPoint() {
+    const response = await getUserPoint();
+    return response;
+  }
+
   return {
     ...toRefs(state),
     loadRewards,
-    claimReward
+    claimReward,
+    getPoint
   }
 }

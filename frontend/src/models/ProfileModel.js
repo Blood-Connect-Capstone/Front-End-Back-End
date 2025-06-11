@@ -69,3 +69,15 @@ export async function getProfileById(id) {
     throw error;
   }
 }
+
+export async function getDonorHistoryByUserId(userId) {
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  try {
+    const res = await axios.get(`${apiUrl}/donor-histories/user/${userId}`);
+    return res.data.data;
+  } catch (error) {
+    console.error("Error fetching donor history by user ID:", error.message);
+    throw error;
+  }
+}

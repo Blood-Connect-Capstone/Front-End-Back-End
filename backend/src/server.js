@@ -9,11 +9,13 @@ const postRoutes = require('./routes/postRoutes.js');
 const commentRoutes = require('./routes/commentRoutes.js');
 const profileRoutes = require('./routes/profileRoutes.js');
 const donorReservationRoutes = require('./routes/donorReservationRoutes.js');
+const donorHistoryRoutes = require('./routes/donorHistoryRoutes.js');
+const userPointRoutes = require('./routes/userPointRoutes.js');
 
 const init = async () => {
     const server = Hapi.server({
         port: process.env.PORT || 3001,
-        host: 'localhost',
+        host: '0.0.0.0',
         routes: {
             cors: {
                 origin: ['*'],
@@ -48,6 +50,8 @@ const init = async () => {
     server.route(commentRoutes);
     server.route(profileRoutes);
     server.route(donorReservationRoutes);
+    server.route(donorHistoryRoutes);
+    server.route(userPointRoutes);
 
     await server.start();
     console.log('Server running on %s', server.info.uri);

@@ -14,14 +14,6 @@ export const getAuthHeaders = async () => {
   };
 };
 
-// export async function getCurrentUserWithProfile() {
-//   const {
-//     data: { user },
-//   } = await supabaseAnon.auth.getUser();
-//   if (!user) return { user: null, profile: null };
-//   const { data: profile } = await supabaseAnon.from("profiles").select("*").eq("user_id", user.id).single();
-//   return { user, profile };
-// }
 export async function getCurrentUserWithProfile() {
   const { data: { user } } = await supabaseAnon.auth.getUser();
   if (!user) return { user: null, profile: null };

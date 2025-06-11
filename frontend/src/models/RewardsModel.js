@@ -1,3 +1,6 @@
+import { getCurrentUserWithProfile } from "@/composables/supabaseClient";
+import axios from "axios";
+
 export class RewardsModel {
   constructor() {
     this.rewards = [
@@ -53,4 +56,13 @@ export class RewardsModel {
   claimReward(id) {
     return Promise.resolve(`Reward with ID ${id} has been claimed.`)
   }
+}
+
+export async function getUserPoint() {
+  const user = await getCurrentUserWithProfile();
+
+  const res = await axios.get(`${import.meta.env.VITE_API_URL}/user-points/user/${user.user.id}`);
+
+  console.log(res.data.data);
+  return res.data.data;
 }
