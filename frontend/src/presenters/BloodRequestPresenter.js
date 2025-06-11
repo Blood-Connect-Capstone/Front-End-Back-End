@@ -3,18 +3,31 @@ import {
     fetchBloodRequests,
     getDistanceFromLatLonInKm,
     formatDate,
-    getUrgencyClass,
-    getUrgencyText
 } from '../models/BloodRequestModel';
+import { fetchMyReservations } from '../models/MyReservationModel';
 
 export function BloodRequestPresenter() {
     const bloodRequests = ref([]);
     const userLocation = ref({ lat: null, lng: null });
     const userBloodType = "AB+";
+    const hasActiveReservation = ref(false); 
+    
+    const checkActiveReservations = async () => {
+        try {
+            const reservations = await fetchMyReservations();
+            hasActiveReservation.value = reservations.some(reservation =>
+                reservation.status === 'pending' ||
+                reservation.status === 'on-screening'
+            );
+        } catch (error) {
+            console.error('Error checking active reservations:', error);
+        }
+    };
 
     const loadBloodRequests = async () => {
         try {
             const requests = await fetchBloodRequests(userBloodType);
+            await checkActiveReservations();
 
             let mappedRequests = requests.map(request => ({
                 id: request.request_id,
@@ -40,7 +53,7 @@ export function BloodRequestPresenter() {
                         request.lng
                     ).toFixed(2);
                 });
-                
+
                 mappedRequests.sort((a, b) => a.distance - b.distance);
             }
 
@@ -55,35 +68,22 @@ export function BloodRequestPresenter() {
         userLocation.value.lng = lng;
     };
 
-    const openRequestDetails = (request) => {
-        console.log('Opening details for:', request.patientName);
-    };
-
     const navigateToHospital = (request) => {
         const url = `https://www.google.com/maps/dir/?api=1&destination=${request.lat},${request.lng}`;
         window.open(url, '_blank');
     };
 
-    const openWhatsAppChat = (phoneNumber) => {
-        const url = `https://wa.me/${phoneNumber}`;
-        window.open(url, '_blank');
-    };
-
     const getFormattedDate = formatDate;
-    const getUrgencyStyle = getUrgencyClass;
-    const getUrgencyLabel = getUrgencyText;
-
+    
     return {
         bloodRequests,
         userLocation,
         userBloodType,
+        hasActiveReservation,
         loadBloodRequests,
         setUserLocation,
-        openRequestDetails,
         navigateToHospital,
-        openWhatsAppChat,
         getFormattedDate,
-        getUrgencyStyle,
-        getUrgencyLabel
+        checkActiveReservations
     };
 }

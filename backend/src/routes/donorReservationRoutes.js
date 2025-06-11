@@ -38,6 +38,16 @@ module.exports = [
     },
     {
         method: 'PATCH',
+        path: '/api/v1/donor-reservations/date',
+        handler: donorReservationPresenter.updateDate
+    },
+    {
+        method: 'PATCH',
+        path: '/api/v1/donor-reservations/status',
+        handler: donorReservationPresenter.updateStatus
+    },
+    {
+        method: 'PATCH',
         path: '/api/v1/donor-reservations/screening-status',
         handler: donorReservationPresenter.updateScreeningStatus
     },

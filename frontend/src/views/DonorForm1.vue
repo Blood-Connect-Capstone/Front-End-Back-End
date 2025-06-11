@@ -1,57 +1,68 @@
 <template>
   <Navbar />
   <div class="container-lg my-5">
-    <form @submit.prevent="handleSubmit" class="mx-auto"
-      style="max-width: 750px; border-radius: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); padding: 40px 60px">
-      <h2 class="mb-4 text-center">Kuesioner Donor Darah</h2>
-      <div class="d-flex flex-row justify-content-between mt-4">
-        <div>
-          <div class="mb-3">
-            <label for="nik" class="form-label">NIK*</label>
-            <input id="nik" v-model="form.nik" class="form-control" placeholder="Enter NIK" required />
-          </div>
+    <form @submit.prevent="handleSubmit" class="mx-auto form-container">
+      <h2 class="mb-4 text-center form-title">Kuesioner Donor Darah</h2>
 
-          <div class="mb-3">
-            <label for="full_name" class="form-label">Full Name*</label>
-            <input id="full_name" v-model="form.full_name" class="form-control" placeholder="Enter full name"
+      <div class="row g-4 mt-2">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="nik" class="form-label">Nomor Induk Kependudukan (NIK)*</label>
+            <input id="nik" v-model="form.nik" class="form-control" placeholder="Masukkan NIK" required />
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="weight" class="form-label">Berat Badan (Kg)*</label>
+            <input id="weight" v-model.number="form.weight" type="number" step="0.01" class="form-control"
+              placeholder="Masukkan berat badan" required />
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="full_name" class="form-label">Nama Lengkap*</label>
+            <input id="full_name" v-model="form.full_name" class="form-control" placeholder="Masukkan nama lengkap"
               required />
           </div>
+        </div>
 
-          <div>
-            <label for="gender" class="form-label">Gender*</label>
-            <div class="mb-3 d-flex flex-row justify-content-between">
-              <div class="mb-2">
-                <input type="radio" id="Male" value="Male" v-model="form.gender" />
-                <label for="Male">Male</label>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="height" class="form-label">Tinggi Badan (Cm)*</label>
+            <input id="height" v-model.number="form.height" type="number" step="0.01" class="form-control"
+              placeholder="Masukkan tinggi badan" required />
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label class="form-label">Jenis Kelamin*</label>
+            <div class="gender-options">
+              <div class="form-check">
+                <input type="radio" id="Male" value="Male" v-model="form.gender" class="form-check-input" />
+                <label for="Male" class="form-check-label">Laki-laki</label>
               </div>
-              <div class="mb-2">
-                <input type="radio" id="Female" value="Female" v-model="form.gender" />
-                <label for="Female">Female</label>
+              <div class="form-check">
+                <input type="radio" id="Female" value="Female" v-model="form.gender" class="form-check-input" />
+                <label for="Female" class="form-check-label">Perempuan</label>
               </div>
             </div>
           </div>
         </div>
 
-        <div>
-          <div class="mb-3">
-            <label for="weight" class="form-label">Weight (kg)*</label>
-            <input id="weight" v-model.number="form.weight" type="number" step="0.01" class="form-control"
-              placeholder="Enter weight in kg" required />
-          </div>
-
-          <div class="mb-3">
-            <label for="height" class="form-label">Height (cm)*</label>
-            <input id="height" v-model.number="form.height" type="number" step="0.01" class="form-control"
-              placeholder="Enter height in cm" required />
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="province" class="form-label">Provinsi*</label>
+            <input v-model="form.province" class="form-control" placeholder="Masukkan provinsi" required />
           </div>
         </div>
-      </div>
 
-      <div class="d-flex flex-row justify-content-between">
-        <div>
-          <div class="mb-3 d-flex flex-column">
-            <label for="religion" class="form-label">Religion* </label>
-            <select v-model="form.religion" class="form-control">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="religion" class="form-label">Agama*</label>
+            <select v-model="form.religion" class="form-control" id="religion">
               <option value="" disabled selected hidden>Pilih Agama</option>
               <option value="Islam">Islam</option>
               <option value="Kristen Protestan">Kristen Protestan</option>
@@ -62,75 +73,109 @@
               <option value="Lainnya">Lainnya</option>
             </select>
           </div>
-          <div class="mb-3">
-            <label for="place_of_birth" class="form-label">Place of Birth* </label>
-            <input v-model="form.place_of_birth" class="form-control mb-3" placeholder="Place of Birth" required />
-          </div>
-          <div class="mb-3">
-            <label for="date_of_birth" class="form-label">Date of Birth* </label>
-            <input id="date_of_birth" v-model="form.date_of_birth" type="date" class="form-control"
-              placeholder="Date of Birth" required />
-          </div>
-          <div class="mb-3">
-            <label for="address" class="form-label">Full Address* </label>
-            <textarea v-model="form.full_address" class="form-control mb-3" placeholder="Full Address" required />
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="city_or_regency" class="form-label">Kabupaten/Kota*</label>
+            <input v-model="form.city_or_regency" class="form-control" placeholder="Masukkan kabupaten/kota" required />
           </div>
         </div>
 
-        <div>
-          <div class="mb-3">
-            <label for="province" class="form-label">Province* </label>
-            <input v-model="form.province" class="form-control mb-3" placeholder="Province" required />
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="place_of_birth" class="form-label">Tempat Lahir*</label>
+            <input v-model="form.place_of_birth" class="form-control" placeholder="Masukkan tempat lahir" required />
           </div>
-          <div class="mb-3">
-            <label for="city_or_regency" class="form-label">City or Regency* </label>
-            <input v-model="form.city_or_regency" class="form-control mb-3" placeholder="City or Regency" required />
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="district" class="form-label">Kecamatan*</label>
+            <input v-model="form.district" class="form-control" placeholder="Masukkan kecamatan" required />
           </div>
-          <div class="mb-3">
-            <label for="district" class="form-label">District* </label>
-            <input v-model="form.district" class="form-control mb-3" placeholder="District" required />
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="date_of_birth" class="form-label">Tanggal Lahir*</label>
+            <input id="date_of_birth" v-model="form.date_of_birth" type="date" class="form-control" required />
           </div>
-          <div class="mb-3">
-            <label for="sub_district" class="form-label">Sub District* </label>
-            <input v-model="form.sub_district" class="form-control mb-3" placeholder="Sub District" required />
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="sub_district" class="form-label">Kelurahan*</label>
+            <input v-model="form.sub_district" class="form-control" placeholder="Masukkan kelurahan" required />
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="form-group">
+            <label for="address" class="form-label">Alamat Lengkap*</label>
+            <textarea v-model="form.full_address" class="form-control" placeholder="Masukkan alamat lengkap" rows="3"
+              required></textarea>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="occupation" class="form-label">Pekerjaan*</label>
+            <input v-model="form.occupation" class="form-control" placeholder="Masukkan pekerjaan" required />
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="last_donor_date" class="form-label">Kapan terakhir kali donor darah?</label>
+            <input v-model="form.last_donor_date" type="date" class="form-control" />
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="blood_type" class="form-label">Golongan Darah*</label>
+            <select v-model="form.blood_type" class="form-control" id="blood_type" required>
+              <option value="" disabled selected hidden>Pilih Golongan Darah</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="AB">AB</option>
+              <option value="O">O</option>
+              <option value="Tidak Tahu">Tidak Tahu</option>
+              <option value="Diskrepansi">Diskrepansi / Tidak Cocok</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="last_donor_place" class="form-label">Tempat terakhir donor darah</label>
+            <input v-model="form.last_donor_place" class="form-control" placeholder="Masukkan tempat terakhir donor" />
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="total_donors" class="form-label">Sudah berapa kali pernah donor darah?*</label>
+            <input v-model.number="form.total_donors" type="number" class="form-control"
+              placeholder="Masukkan jumlah donor sebelumnya" required />
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="donor_card_number" class="form-label">Nomor kartu donor darah sebelumnya</label>
+            <input v-model="form.donor_card_number" class="form-control" placeholder="Masukkan nomor kartu donor" />
           </div>
         </div>
       </div>
 
-      <div class="d-flex flex-row justify-content-between">
-        <div>
-          <div class="mb-3">
-            <label for="occupation" class="form-label">Occupation* </label>
-            <input v-model="form.occupation" class="form-control mb-3" placeholder="Occupation" required />
-          </div>
-          <div class="mb-3">
-            <label for="blood_type" class="form-label">Blood Type* </label>
-            <input v-model="form.blood_type" class="form-control mb-3" placeholder="Blood Type" required />
-          </div>
-          <div class="mb-3">
-            <label for="total_donors" class="form-label">Total Previous Donors* </label>
-            <input v-model.number="form.total_donors" type="number" class="form-control mb-3"
-              placeholder="Total Previous Donors" required />
-          </div>
-        </div>
-        <div>
-          <div class="mb-3">
-            <label for="last_donor_date" class="form-label">Last Donor Date</label>
-            <input v-model="form.last_donor_date" type="date" class="form-control mb-3" placeholder="Last Donor Date" />
-          </div>
-          <div class="mb-3">
-            <label for="last_donor_place" class="form-label">Last Donor Place</label>
-            <input v-model="form.last_donor_place" class="form-control mb-3" placeholder="Last Donor Place" />
-          </div>
-          <div class="mb-3">
-            <label for="donor_card_number" class="form-label">Previous Donor Card Number</label>
-            <input v-model="form.donor_card_number" class="form-control mb-3"
-              placeholder="Previous Donor Card Number" />
-          </div>
-        </div>
+      <div class="form-footer">
+        <p class="text-muted">Pastikan semua data yang diisi sudah benar sebelum mengirimkan kuesioner.</p>
+        <button type="submit" class="btn-custom">
+          Selanjutnya
+        </button>
       </div>
-      <p class="text-muted mb-4">Pastikan semua data yang diisi sudah benar sebelum mengirimkan kuesioner.</p>
-      <button type="submit" class="btn btn-danger w-100">Selanjutnya</button>
     </form>
   </div>
   <Footer />
@@ -240,9 +285,124 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.form-container {
+  max-width: 900px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  padding: 2rem;
+  background: #ffffff;
+}
+
+.form-title {
+  color: #1f2937;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.section-divider {
+  margin: 2rem 0 1.5rem 0;
+  border-bottom: 2px solid #f3f4f6;
+  padding-bottom: 0.5rem;
+}
+
+.section-title {
+  color: #374151;
+  font-weight: 600;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.form-group {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #4a5568;
+  display: block;
+  font-size: 0.95rem;
+}
+
 .form-control {
-  min-width: 280px;
   width: 100%;
-  padding: 8px 12px;
+  padding: 0.8rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #DC2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.form-control::placeholder {
+  color: #a0aec0;
+}
+
+.gender-options {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-check-input {
+  margin: 0;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.form-check-label {
+  margin: 0;
+  cursor: pointer;
+  color: #374151;
+  font-weight: 500;
+}
+
+.form-footer {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.form-footer p {
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.btn-custom {
+  background-color: #DC2626;
+  border: none;
+  color: white;
+  padding: 0.875rem 2.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .form-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .btn-custom {
+    width: 100%;
+    min-width: auto;
+  }
 }
 </style>

@@ -6,13 +6,12 @@ const {
     bloodRequests,
     userLocation,
     userBloodType,
+    hasActiveReservation,
     loadBloodRequests,
     setUserLocation,
-    openRequestDetails,
     navigateToHospital,
     getFormattedDate,
-    getUrgencyStyle,
-    getUrgencyLabel
+    checkActiveReservations
 } = BloodRequestPresenter();
 
 let map = null;
@@ -59,6 +58,7 @@ const initializeMap = () => {
 
 const refreshData = async () => {
     await loadBloodRequests();
+    await checkActiveReservations();
     initializeMap();
 };
 
@@ -69,16 +69,19 @@ onMounted(async () => {
                 setUserLocation(position.coords.latitude, position.coords.longitude);
 
                 await loadBloodRequests();
+                await checkActiveReservations();
                 initializeMap();
             },
             async (error) => {
                 console.warn('Geolocation error:', error);
                 await loadBloodRequests();
+                await checkActiveReservations();
                 initializeMap();
             }
         );
     } else {
         await loadBloodRequests();
+        await checkActiveReservations();
         initializeMap();
     }
 });
@@ -151,10 +154,6 @@ const bloodRequestIcon = L.divIcon({
                                     <div class="flex-grow-1">
                                         <div class="d-flex align-items-center gap-2 mb-1">
                                             <span class="fw-medium text-danger small">{{ request.patientName }}</span>
-                                            <span :class="getUrgencyStyle(request.urgency)"
-                                                class="badge badge-sm px-2 py-1" style="font-size: 0.65rem;">
-                                                {{ getUrgencyLabel(request.urgency) }}
-                                            </span>
                                         </div>
                                         <div class="mt-1 d-flex align-items-center gap-2">
                                             <span class="badge bg-danger text-white px-2 py-1"
@@ -175,14 +174,18 @@ const bloodRequestIcon = L.divIcon({
                                         <div class="text-muted small">{{ request.neededUnits }} unit</div>
                                     </div>
 
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-outline-secondary btn-sm"
+                                    <div class="d-flex gap-2"> <button class="btn btn-outline-secondary btn-sm"
                                             @click.stop="navigateToHospital(request)">
                                             Rute
                                         </button>
-                                        <router-link :to="`/reservation/request/${request.id}`" class="btn btn-danger btn-sm">
+                                        <router-link v-if="!hasActiveReservation"
+                                            :to="`/reservation/request/${request.id}`" class="btn btn-danger btn-sm">
                                             Reservasi
                                         </router-link>
+                                        <button v-else class="btn btn-secondary btn-sm" disabled
+                                            title="Anda memiliki reservasi yang sedang berlangsung">
+                                            Reservasi
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -198,10 +201,6 @@ const bloodRequestIcon = L.divIcon({
 </template>
 
 <style scoped>
-.badge-sm {
-    font-size: 0.65rem;
-    padding: 0.25rem 0.5rem;
-}
 
 .list-group-item-action:hover {
     background-color: #f8f9fa !important;

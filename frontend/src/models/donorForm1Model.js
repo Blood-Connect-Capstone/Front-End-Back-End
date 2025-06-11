@@ -9,7 +9,7 @@ export async function form1Data(formData) {
     last_donor_date: formData.last_donor_date,
     last_donor_place: formData.last_donor_place,
     donor_card_number: formData.donor_card_number,
-    status: 'pending',
+    status: 'on-screening',
     screening_status: 'tahap_1',
   };
 

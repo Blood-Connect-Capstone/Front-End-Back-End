@@ -41,6 +41,43 @@ export async function updateUserEligibility(eligibility) {
     }
 }
 
+export async function updateReservationDate(userId, reservation_type, refer_id, donor_date) {
+    try {
+        const response = await axios.patch(
+            import.meta.env.VITE_API_URL + `/donor-reservations/date`,
+            {
+                user_id: userId,
+                reservation_type: reservation_type,
+                refer_id: refer_id,
+                donor_date: donor_date
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error updating reservation date:', error);
+        throw error;
+    }
+}
+
+export async function updateStatus(userId, reservation_type, refer_id, status) {
+    try {
+        const response = await axios.patch(
+            import.meta.env.VITE_API_URL + `/donor-reservations/status`,
+            {
+                user_id: userId,
+                reservation_type: reservation_type,
+                refer_id: refer_id,
+                status: status
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('Error updating reservation status:', error);
+        throw error;
+    }
+}
+
 export async function updateReservationStatus(userId, reservation_type, refer_id, status) {
     try {
         const response = await axios.patch(

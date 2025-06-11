@@ -8,7 +8,6 @@ const questionnaireQuestionRoutes = require('./routes/questionnaireQuestionRoute
 const postRoutes = require('./routes/postRoutes.js');
 const commentRoutes = require('./routes/commentRoutes.js');
 const profileRoutes = require('./routes/profileRoutes.js');
-const formRoutes = require("./routes/formRoute.js");
 const donorReservationRoutes = require('./routes/donorReservationRoutes.js');
 
 const init = async () => {
@@ -48,7 +47,6 @@ const init = async () => {
     server.route(postRoutes);
     server.route(commentRoutes);
     server.route(profileRoutes);
-    server.route(formRoutes);
     server.route(donorReservationRoutes);
 
     await server.start();

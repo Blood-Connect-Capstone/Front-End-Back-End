@@ -94,6 +94,43 @@ module.exports = {
         }
     },
 
+    async updateDate(request, h) {
+        try {
+            const { user_id, reservation_type, refer_id, donor_date } = request.payload;
+            const updatedDonorReservation = await donorReservationModel.updateDate(user_id, reservation_type, refer_id, donor_date);
+
+            return h.response({
+                success: true,
+                data: updatedDonorReservation,
+                message: 'Date updated successfully'
+            }).code(200);
+        } catch (err) {
+            return h.response({
+                success: false,
+                message: 'Failed to update date',
+                error: err.message
+            }).code(500);
+        }
+    },
+
+    async updateStatus(request, h) {
+        try {
+            const { user_id, reservation_type, refer_id, status } = request.payload;
+            const updatedDonorReservation = await donorReservationModel.updateStatus(user_id, reservation_type, refer_id, status);
+            return h.response({
+                success: true,
+                data: updatedDonorReservation,
+                message: 'Status updated successfully'
+            }).code(200);
+        } catch (err) {
+            return h.response({
+                success: false,
+                message: 'Failed to update status',
+                error: err.message
+            }).code(500);
+        }
+    },
+
     async updateScreeningStatus(request, h) {
         try {
             const { user_id, reservation_type, refer_id, screening_status } = request.payload;

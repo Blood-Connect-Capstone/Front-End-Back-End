@@ -40,29 +40,3 @@ export function formatDate(dateString) {
         return `${diffDays} hari lalu`;
     }
 }
-
-export function getUrgencyClass(urgency) {
-    switch (urgency) {
-        case 'urgent':
-            return 'bg-danger text-white';
-        case 'high':
-            return 'bg-warning text-dark';
-        case 'medium':
-            return 'bg-info text-white';
-        default:
-            return 'bg-secondary text-white';
-    }
-}
-
-export function getUrgencyText(urgency) {
-    switch (urgency) {
-        case 'urgent':
-            return 'Sangat Mendesak';
-        case 'high':
-            return 'Mendesak';
-        case 'medium':
-            return 'Sedang';
-        default:
-            return 'Biasa';
-    }
-}

@@ -1,8 +1,8 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import { DonorLocationPresenter } from '../presenters/DonorLocationPresenter';
 
-const { nearbyPlaces, userLocation, loadDonorLocations, setUserLocation } = DonorLocationPresenter();
+const { nearbyPlaces, hasActiveReservation, loadDonorLocations, setUserLocation, checkActiveReservations } = DonorLocationPresenter();
 
 const initializeMap = (lat, lng) => {
     const map = L.map('map').setView([lat, lng], 12);
@@ -26,13 +26,16 @@ onMounted(async () => {
         navigator.geolocation.getCurrentPosition(async (position) => {
             setUserLocation(position.coords.latitude, position.coords.longitude);
             await loadDonorLocations();
+            await checkActiveReservations();
             initializeMap(position.coords.latitude, position.coords.longitude);
         }, async () => {
             await loadDonorLocations();
+            await checkActiveReservations();
             initializeMap(-6.2, 106.8167);
         });
     } else {
         await loadDonorLocations();
+        await checkActiveReservations();
         initializeMap(-6.2, 106.8167);
     }
 });
@@ -94,7 +97,7 @@ const donorIcon = L.divIcon({
                     <ul class="list-group list-group-flush">
                         <li v-for="(place, index) in nearbyPlaces" :key="index"
                             class="list-group-item list-group-item-action" style="cursor:pointer;">
-                            <div class="p-2" @click="openPlaceDetails(place)">
+                            <div class="p-2">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div class="flex-grow-1">
                                         <div class="d-flex align-items-center">
@@ -124,11 +127,14 @@ const donorIcon = L.divIcon({
                                         <button class="btn btn-outline-secondary btn-sm"
                                             @click.stop="navigateToMaps(place)">
                                             Rute
-                                        </button>
-                                        <router-link :to="`/reservation/place/${place.id}`"
-                                            class="btn btn-danger btn-sm">
+                                        </button> <router-link v-if="!hasActiveReservation"
+                                            :to="`/reservation/place/${place.id}`" class="btn btn-danger btn-sm">
                                             Reservasi
                                         </router-link>
+                                        <button v-else class="btn btn-secondary btn-sm" disabled
+                                            title="Anda memiliki reservasi yang sedang berlangsung">
+                                            Reservasi
+                                        </button>
                                     </div>
                                 </div>
                             </div>

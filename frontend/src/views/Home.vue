@@ -8,6 +8,7 @@ import BloodRequest from './BloodRequest.vue';
 const { tabs, cards, activeTab, onTabClick } = HomePresenter();
 
 import { ref, onMounted } from 'vue';
+import MyReservation from "./MyReservation.vue";
 
 const isMobile = ref(false);
 
@@ -36,7 +37,7 @@ onMounted(() => {
                         <div class="tab-pane-content">
                             <DonorLocation v-if="tab.content === 'location'" />
                             <BloodRequest v-else-if="tab.content === 'request'" />
-                            <div v-else>{{ tab.content }}</div>
+                            <MyReservation v-else />
                         </div>
                     </div>
                 </template>
@@ -48,7 +49,7 @@ onMounted(() => {
                 <div v-if="activeTab === tab.id" class="tab-pane fade show active">
                     <DonorLocation v-if="tab.content === 'location'" />
                     <BloodRequest v-else-if="tab.content === 'request'" />
-                    <div v-else>{{ tab.content }}</div>
+                    <MyReservation v-else />
                 </div>
             </template>
         </div>
@@ -198,7 +199,6 @@ main {
     display: none;
 }
 
-/* Mobile styles */
 @media (max-width: 634px) {
     .nav-tabs {
         flex-direction: column;

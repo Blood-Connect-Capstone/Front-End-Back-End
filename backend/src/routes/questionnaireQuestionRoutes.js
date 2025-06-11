@@ -1,7 +1,7 @@
 const questionnaireQuestionOptionsPresenter = require('../presenters/questionnaireQuestionOptionPresenter');
 const questionnaireUserAnswersPresenter = require('../presenters/questionnaireUserAnswerPresenter');
 const questionnaireScreeningResultsPresenter = require('../presenters/questionnaireScreeningResultPresenter');
-const QuestionnaireQuestionPresenter = require('../presenters/QuestionnaireQuestionPresenter');
+const QuestionnaireQuestionPresenter = require('../presenters/questionnaireQuestionPresenter');
 
 module.exports = [
     {

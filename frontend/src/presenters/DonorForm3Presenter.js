@@ -1,6 +1,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { getDonorForm3Questions } from '@/models/DonorForm3Model';
-import { updateUserEligibility } from '@/models/DonorReservationModel';
+import { updateReservationStatus, updateStatus, updateUserEligibility } from '@/models/DonorReservationModel';
+import { getCurrentUserWithProfile } from '@/composables/supabaseClient';
+import { saveAnswer } from '@/models/DonorForm3Model';
 
 export function useDonorPresenter() {
   const questionsWithOptions = ref([])
@@ -89,7 +91,7 @@ export function useDonorPresenter() {
       answers.value[currentQuestionIndex.value] !== null;
   })
 
-  const submit = async () => {
+  const submit = async (reservation_type, refer_id) => {
     const lastAnswer = answerResults.value[currentQuestionIndex.value];
 
     if (lastAnswer?.logicAction !== 'ACCEPT') {
@@ -103,10 +105,22 @@ export function useDonorPresenter() {
       }
 
       return;
-    }
+    } try {
+      const user = await getCurrentUserWithProfile();
+      await updateReservationStatus(user.user.id, reservation_type, refer_id, 'tahap_3');
+      
+      const formattedAnswers = answerResults.value
+        .filter(result => result !== null)
+        .map(result => {
+          return {
+            questionId: result.questionId,
+            optionId: result.optionId
+          };
+        });
 
-    try {
-      alert('Jawaban berhasil dikirim!')
+      await saveAnswer(formattedAnswers);
+
+      console.log("Answers submitted successfully:", formattedAnswers);
     } catch (error) {
       console.error("Error submitting answers:", error)
       alert('Gagal mengirim jawaban. Silakan coba lagi.')

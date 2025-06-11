@@ -4,6 +4,10 @@ import Footer from "@/components/Footer.vue"
 import { useDonorPresenter } from "@/presenters/DonorForm3Presenter"
 import { ref } from 'vue'
 import ScreeningResult from "@/components/ScreeningResult.vue"
+import { useRoute } from "vue-router"
+import { getUserDonorReservationsByReference, updateUserEligibility } from "@/models/DonorReservationModel"
+
+const emit = defineEmits(['form-submitted']);
 
 const {
   questionsWithOptions,
@@ -22,6 +26,8 @@ const {
   submit
 } = useDonorPresenter()
 
+const route = useRoute()
+
 const resetScreening = async () => {
   try {
     const response = await getUserDonorReservationsByReference(route.params.type, route.params.id);
@@ -37,8 +43,10 @@ const resetScreening = async () => {
   }
 }
 
-const handleSubmit = () => {
-  submit()
+const handleSubmit = async () => {
+  const res = await submit(route.params.type, route.params.id);
+
+  emit('form-submitted')
 }
 </script>
 

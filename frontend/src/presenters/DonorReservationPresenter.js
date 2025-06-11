@@ -4,8 +4,12 @@ import {
     deleteDonorReservation,
     getUserDonorReservationsByReference,
     getUserEligibility,
+    updateReservationDate,
+    updateReservationStatus,
+    updateStatus,
     updateUserEligibility,
 } from '@/models/DonorReservationModel';
+import { getCurrentUserWithProfile } from '@/composables/supabaseClient';
 
 export default function useDonorScreeningPresenter() {
     const isLoading = ref(false);
@@ -55,6 +59,20 @@ export default function useDonorScreeningPresenter() {
         }
     };
 
+    const updateDate = async (donor_date) => {
+        try {
+            const { user } = await getCurrentUserWithProfile();
+            const response = await updateReservationDate(user.id, reservation_type.value, refer_id.value, donor_date);
+
+            await updateStatus(user.id, reservation_type.value, refer_id.value, 'pending');
+            await updateReservationStatus(user.id, reservation_type.value, refer_id.value, 'selesai');
+            return response;
+        } catch (error) {
+            console.error('Error updating date:', error);
+            throw error;
+        }
+    };
+
     return {
         isLoading,
         refer_id,
@@ -64,5 +82,6 @@ export default function useDonorScreeningPresenter() {
         fetchData,
         refreshCurrentStep,
         resetScreening,
+        updateDate,
     };
 }

@@ -1,3 +1,4 @@
+import { getCurrentUserWithProfile } from "@/composables/supabaseClient";
 import axios from "axios";
 
 export const getDonorForm3Questions = async () => {
@@ -29,3 +30,24 @@ export const getDonorForm3Questions = async () => {
   }
 };
 
+export async function saveAnswer(answers) {
+  try {
+    const user = await getCurrentUserWithProfile();
+
+    const formattedAnswers = answers.map(answer => ({
+      questionId: answer.questionId,
+      optionId: answer.optionId,
+      manualInput: ""
+    }));
+
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/questionnaire-user-answers/bulk`, {
+      user_id: user.user.id,
+      answers: formattedAnswers
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error saving answers:', error);
+    throw error;
+  }
+}

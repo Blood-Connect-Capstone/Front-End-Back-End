@@ -39,10 +39,13 @@ module.exports = {
         const { data, error } = await supabase
             .from('donor_reservations')
             .select(`
+            *,
+            profiles:user_id (*),
+            donor_locations:donor_location_id (*),
+            blood_requests:blood_request_id (
                 *,
-                profiles:user_id (*),
-                donor_locations:donor_location_id (*),
-                blood_requests:blood_request_id (*)
+                donor_locations:location_id (*)
+            )
             `)
             .eq('user_id', userId)
             .order('created_at', { ascending: false });
@@ -104,25 +107,52 @@ module.exports = {
         return data;
     },
 
-    async updateScreeningStatus(user_id, reservation_type, refer_id, screeningStatus) {
+    async updateByCondition(conditions, updateData) {
         let query = supabase
             .from('donor_reservations')
             .update({
-                screening_status: screeningStatus,
+                ...updateData,
                 updated_at: new Date().toISOString()
-            })
-            .eq('user_id', user_id);
+            });
 
-        if (reservation_type === 'request') {
-            query = query.eq('blood_request_id', refer_id);
-        } else {
-            query = query.eq('donor_location_id', refer_id);
-        }
+        Object.entries(conditions).forEach(([key, value]) => {
+            query = query.eq(key, value);
+        });
 
         const { data, error } = await query.select();
 
         if (error) throw error;
         return data;
+    },
+
+    async updateByReference(user_id, reservation_type, refer_id, updateData) {
+        let query = supabase
+            .from('donor_reservations')
+            .update({
+                ...updateData,
+                updated_at: new Date().toISOString()
+            })
+            .eq('user_id', user_id);
+
+        const referenceColumn = reservation_type === 'request' ? 'blood_request_id' : 'donor_location_id';
+        query = query.eq(referenceColumn, refer_id);
+
+        const { data, error } = await query.select();
+
+        if (error) throw error;
+        return data;
+    },
+
+    async updateDate(user_id, reservation_type, refer_id, donor_date) {
+        return this.updateByReference(user_id, reservation_type, refer_id, { donor_date });
+    },
+
+    async updateStatus(user_id, reservation_type, refer_id, status) {
+        return this.updateByReference(user_id, reservation_type, refer_id, { status });
+    },
+
+    async updateScreeningStatus(user_id, reservation_type, refer_id, screening_status) {
+        return this.updateByReference(user_id, reservation_type, refer_id, { screening_status });
     },
 
     async delete(id) {
