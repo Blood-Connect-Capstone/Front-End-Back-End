@@ -1,7 +1,7 @@
 // /presenter/DonorPresenter.js
 import { ref, computed, onMounted } from 'vue'
 import { DonorForm2Model, fetchQuestionsStage2, saveAnswer } from '../models/DonorForm2Model'
-import { updateUserEligibility, updateReservationStatus } from '@/models/DonorReservationModel'
+import { updateUserEligibility, updateReservationStatus, getUserDonorReservationsByReference } from '@/models/DonorReservationModel'
 import { getCurrentUserWithProfile } from '@/composables/supabaseClient'
 
 export function useDonorPresenter() {
@@ -49,25 +49,30 @@ export function useDonorPresenter() {
   const submit = async (reservation_type, refer_id) => {
     try {
       let userEligibility = ''
+      const reservation = await getUserDonorReservationsByReference(reservation_type, refer_id);
+      const user = await getCurrentUserWithProfile();
 
       if (hasYesAnswer.value) {
         userEligibility = 'banned';
         endScreeningReason.value = 'Mohon maaf, berdasarkan jawaban Anda, Anda tidak dapat mendonorkan darah saat ini.';
+
+        await updateReservationStatus(user.user.id, reservation_type, refer_id, 'tidak-memenuhi');
       } else if (hasMaybeAnswer.value) {
         userEligibility = 'temporary_ban';
         endScreeningReason.value = 'Mohon maaf, berdasarkan jawaban Anda, Anda tidak dapat mendonorkan darah saat ini.';
+
+        await updateReservationStatus(user.user.id, reservation_type, refer_id, 'tidak-memenuhi');
       } else {
         userEligibility = 'allowed'
         endScreeningReason.value = 'Anda telah memenuhi syarat untuk menuju tahap screening berikutnya.';
 
         if (refer_id) {
-          const user = await getCurrentUserWithProfile();
           await updateReservationStatus(user.user.id, reservation_type, refer_id, 'tahap_2');
         }
       }
 
       await updateUserEligibility(userEligibility)
-      await saveAnswer(answers.value)
+      await saveAnswer(answers.value, reservation.id);
 
       return userEligibility;
     } catch (error) {

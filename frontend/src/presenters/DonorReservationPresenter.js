@@ -49,7 +49,9 @@ export default function useDonorScreeningPresenter() {
     const resetScreening = async () => {
         try {
             const response = await getUserDonorReservationsByReference(reservation_type.value, refer_id.value);
-            await deleteDonorReservation(response.id);
+            if (response.id) {
+                await deleteDonorReservation(response.id);
+            }
             await updateUserEligibility('allowed');
 
             userEligibility.value = 'allowed';
@@ -65,7 +67,7 @@ export default function useDonorScreeningPresenter() {
             const response = await updateReservationDate(user.id, reservation_type.value, refer_id.value, donor_date);
 
             await updateStatus(user.id, reservation_type.value, refer_id.value, 'pending');
-            await updateReservationStatus(user.id, reservation_type.value, refer_id.value, 'selesai');
+            await updateReservationStatus(user.id, reservation_type.value, refer_id.value, 'memenuhi');
             return response;
         } catch (error) {
             console.error('Error updating date:', error);

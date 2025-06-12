@@ -30,11 +30,12 @@ export const getDonorForm3Questions = async () => {
   }
 };
 
-export async function saveAnswer(answers) {
+export async function saveAnswer(answers, donorReservationId) {
   try {
     const user = await getCurrentUserWithProfile();
 
     const formattedAnswers = answers.map(answer => ({
+      donorReservationId: donorReservationId,
       questionId: answer.questionId,
       optionId: answer.optionId,
       manualInput: ""

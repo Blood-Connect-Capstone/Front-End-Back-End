@@ -9,6 +9,7 @@ export const createComment = async (commentData) => {
             headers: await getAuthHeaders()
         });
 
+        // Mengembalikan seluruh response.data yang berisi data komentar baru
         return response.data;
     } catch (error) {
         console.error('Error creating comment:', error);

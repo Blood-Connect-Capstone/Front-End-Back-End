@@ -1,6 +1,12 @@
 import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router';
 import { getDonorForm3Questions } from '@/models/DonorForm3Model';
-import { updateReservationStatus, updateStatus, updateUserEligibility } from '@/models/DonorReservationModel';
+import {
+  getUserDonorReservationsByReference,
+  updateReservationStatus,
+  updateStatus,
+  updateUserEligibility
+} from '@/models/DonorReservationModel';
 import { getCurrentUserWithProfile } from '@/composables/supabaseClient';
 import { saveAnswer } from '@/models/DonorForm3Model';
 
@@ -15,6 +21,10 @@ export function useDonorPresenter() {
   const isScreeningEnded = ref(false)
   const endScreeningReason = ref(null)
   const endScreeningAction = ref(null)
+
+  const route = useRoute();
+  const refer_id = ref(route.params.id);
+  const reservation_type = ref(route.params.type);
 
   const fetchQuestions = async () => {
     isLoading.value = true
@@ -34,7 +44,6 @@ export function useDonorPresenter() {
   }
 
   onMounted(fetchQuestions)
-
   const selectOption = (questionIndex, option) => {
     answers.value[questionIndex] = option.label
     answerResults.value[questionIndex] = {
@@ -44,7 +53,6 @@ export function useDonorPresenter() {
       logicNotes: option.logicNotes
     }
   }
-
   const nextQuestion = async () => {
     if (!answerResults.value[currentQuestionIndex.value]) {
       return;
@@ -65,7 +73,25 @@ export function useDonorPresenter() {
       isScreeningEnded.value = true;
       endScreeningAction.value = currentAnswer.logicAction;
 
-      await updateUserEligibility('temporary_ban');
+      try {
+        const formattedAnswers = answerResults.value
+          .filter(result => result !== null)
+          .map(result => {
+            return {
+              questionId: result.questionId,
+              optionId: result.optionId
+            };
+          });
+
+        const user = await getCurrentUserWithProfile();
+        const reservation = await getUserDonorReservationsByReference(reservation_type.value, refer_id.value);
+
+        await saveAnswer(formattedAnswers, reservation.id);               
+        await updateUserEligibility('temporary_ban');
+        await updateReservationStatus(user.user.id, reservation_type.value, refer_id.value, 'tidak-memenuhi');
+      } catch (error) {
+        console.error("Error saving answers or updating eligibility:", error);
+      }
     }
   }
 
@@ -90,8 +116,7 @@ export function useDonorPresenter() {
     return currentQuestionIndex.value === questionsWithOptions.value.length - 1 &&
       answers.value[currentQuestionIndex.value] !== null;
   })
-
-  const submit = async (reservation_type, refer_id) => {
+  const submit = async (reservation_type_param, refer_id_param) => {
     const lastAnswer = answerResults.value[currentQuestionIndex.value];
 
     if (lastAnswer?.logicAction !== 'ACCEPT') {
@@ -104,11 +129,38 @@ export function useDonorPresenter() {
         isScreeningEnded.value = true;
       }
 
+      try {
+        // Format the answers even when rejected
+        const formattedAnswers = answerResults.value
+          .filter(result => result !== null)
+          .map(result => {
+            return {
+              questionId: result.questionId,
+              optionId: result.optionId
+            };
+          });
+
+        // Get the current user's reservation
+        const user = await getCurrentUserWithProfile();
+        const reservation = await getUserDonorReservationsByReference(reservation_type_param, refer_id_param);
+
+        // Save the answers even when rejected
+        if (formattedAnswers.length > 0 && reservation?.id) {
+          await saveAnswer(formattedAnswers, reservation.id);
+          console.log("Answers saved successfully even though rejected in submit:", formattedAnswers);
+        }
+      } catch (error) {
+        console.error("Error saving answers when rejected:", error);
+      }
+
       return;
-    } try {
+    }
+
+    try {
       const user = await getCurrentUserWithProfile();
-      await updateReservationStatus(user.user.id, reservation_type, refer_id, 'tahap_3');
-      
+      await updateReservationStatus(user.user.id, reservation_type_param, refer_id_param, 'tahap_3');
+      const reservation = await getUserDonorReservationsByReference(reservation_type_param, refer_id_param);
+
       const formattedAnswers = answerResults.value
         .filter(result => result !== null)
         .map(result => {
@@ -118,15 +170,13 @@ export function useDonorPresenter() {
           };
         });
 
-      await saveAnswer(formattedAnswers);
-
+      await saveAnswer(formattedAnswers, reservation.id);
       console.log("Answers submitted successfully:", formattedAnswers);
     } catch (error) {
-      console.error("Error submitting answers:", error)
-      alert('Gagal mengirim jawaban. Silakan coba lagi.')
+      console.error("Error submitting answers:", error);
+      alert('Gagal mengirim jawaban. Silakan coba lagi.');
     }
   }
-
   return {
     questionsWithOptions,
     answers,
@@ -144,6 +194,8 @@ export function useDonorPresenter() {
     resetScreening,
     isComplete,
     submit,
-    fetchQuestions
+    fetchQuestions,
+    refer_id,
+    reservation_type
   }
 }

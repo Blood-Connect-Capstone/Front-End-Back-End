@@ -2,13 +2,15 @@
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <router-link class="navbar-brand d-flex" to="/home">
-        <img class="logo" src="/src/assets/images/logo.svg" alt="" />
+        <img class="logo" src="/assets/images/logo.svg" alt="" />
         <div class="d-flex flex-column align-items-start">
           <span class="title">BloodConnect</span>
           <!-- <small class="text">Temukan donor & permintaan darah di sekitar Anda</small> -->
         </div>
       </router-link>
-      <button class="navbar-toggler small-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler small-toggler" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+        aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -59,7 +61,7 @@ function handleLogout() {
   background-color: white;
 }
 
-.navbar > .container-fluid {
+.navbar>.container-fluid {
   padding: 0 80px;
   z-index: 1001;
 }
@@ -118,6 +120,7 @@ button.nav-link.login.logout-btn {
 .menu {
   color: black;
 }
+
 .menu:hover {
   color: #e7000b;
 }
@@ -127,12 +130,13 @@ button.nav-link.login.logout-btn {
   color: white;
   border-radius: 8px;
 }
+
 .login:hover {
   color: white;
 }
 
 @media (max-width: 1200px) {
-  .navbar > .container-fluid {
+  .navbar>.container-fluid {
     padding: 0 24px;
   }
 }

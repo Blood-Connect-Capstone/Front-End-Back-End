@@ -39,7 +39,7 @@ onMounted(async () => {
       <div class="total-text">Jumlah poin kamu sekarang</div>
     </div>
     <div class="total-points">
-      <img src="/src/assets/icons/points.svg" alt="Points" />
+      <img src="/assets/icons/points.svg" alt="Points" />
       <span class="points">{{ totalPoints }}</span>
     </div>
   </div>

@@ -53,6 +53,7 @@ export function MyReservationPresenter() {
                     bloodType: reservation.blood_request_id
                         ? reservation.blood_requests?.blood_type || userBloodType
                         : userBloodType,
+                    screeningStatus: reservation.screening_status,
                 };
             });
 

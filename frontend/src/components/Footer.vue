@@ -11,16 +11,16 @@
                     <p>Temukan donor & permintaan darah di sekitar Anda.</p>
                     <div class="d-flex gap-4 mt-3">
                         <a href="https://www.facebook.com" target="_blank">
-                            <img src="/src/assets/icons/facebook.svg" alt="Facebook" />
+                            <img src="/assets/icons/facebook.svg" alt="Facebook" />
                         </a>
                         <a href="https://www.linkedin.com" target="_blank">
-                            <img src="/src/assets/icons/linkedin.svg" alt="LinkedIn" />
+                            <img src="/assets/icons/linkedin.svg" alt="LinkedIn" />
                         </a>
                         <a href="https://www.youtube.com" target="_blank">
-                            <img src="/src/assets/icons/youtube.svg" alt="YouTube" />
+                            <img src="/assets/icons/youtube.svg" alt="YouTube" />
                         </a>
                         <a href="https://www.instagram.com" target="_blank">
-                            <img src="/src/assets/icons/instagram.svg" alt="Instagram" />
+                            <img src="/assets/icons/instagram.svg" alt="Instagram" />
                         </a>
                     </div>
                 </div>

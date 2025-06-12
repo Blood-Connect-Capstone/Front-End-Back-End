@@ -61,8 +61,8 @@ export const postPresenter = () => {
             console.error("Error creating post:", error);
             return false;
         }
-    }; 
-    
+    };
+
     const deletePost = async (postId) => {
         if (!confirm('Apakah Anda yakin ingin menghapus postingan ini?')) {
             return false;
@@ -88,9 +88,7 @@ export const postPresenter = () => {
         if (post) {
             post.showComments = !post.showComments;
         }
-    };
-
-    const addComment = async (postId) => {
+    }; const addComment = async (postId) => {
         const text = state.commentText[postId];
 
         if (!text || !text.trim()) return false;
@@ -102,10 +100,18 @@ export const postPresenter = () => {
                 user_id: state.currentUserId
             };
 
-            await createCommentModel(commentData);
+            // Dapatkan response dari API yang berisi ID komentar yang sesungguhnya
+            const response = await createCommentModel(commentData);
 
+            // Validasi respons API
+            if (!response || !response.data || !response.data.id) {
+                console.error("Error: Server did not return valid comment data", response);
+                return false;
+            }
+
+            // Gunakan ID dari respons API, bukan Date.now()
             const comment = {
-                id: Date.now(),
+                id: response.data.id, // Gunakan ID dari respons server
                 author: state.currentUserName,
                 authorId: state.currentUserId,
                 content: text.trim(),
@@ -127,14 +133,18 @@ export const postPresenter = () => {
             console.error("Error adding comment:", error);
             return false;
         }
-    };
-
-    const deleteComment = async (postId, commentId) => {
+    }; const deleteComment = async (postId, commentId) => {
         if (!confirm('Apakah Anda yakin ingin menghapus komentar ini?')) {
             return false;
         }
 
         try {
+            // Pastikan commentId valid sebelum dikirim ke API
+            if (!commentId) {
+                console.error("Invalid comment ID:", commentId);
+                return false;
+            }
+
             await deleteCommentModel(commentId);
 
             const post = state.posts.find(p => p.id === postId);
@@ -144,6 +154,8 @@ export const postPresenter = () => {
 
                 if (commentIndex !== -1) {
                     post.comments.splice(commentIndex, 1);
+                } else {
+                    console.warn("Comment not found in local state:", commentId);
                 }
             }
 

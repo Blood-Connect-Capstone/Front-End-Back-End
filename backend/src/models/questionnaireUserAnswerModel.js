@@ -37,11 +37,11 @@ module.exports = {
     },
 
     async create(answer) {
-        const { user_id, question_id, option_id, manual_input } = answer;
+        const { user_id, donor_reservation_id, question_id, option_id, manual_input } = answer;
 
         const { data, error } = await supabase
             .from('questionnaire_user_answers')
-            .insert([{ user_id, question_id, option_id, manual_input }])
+            .insert([{ user_id, donor_reservation_id, question_id, option_id, manual_input }])
             .select()
             .single();
 
@@ -50,11 +50,11 @@ module.exports = {
     },
 
     async update(id, answer) {
-        const { user_id, question_id, option_id, manual_input } = answer;
+        const { user_id, donor_reservation_id, question_id, option_id, manual_input } = answer;
 
         const { data, error } = await supabase
             .from('questionnaire_user_answers')
-            .update({ user_id, question_id, option_id, manual_input })
+            .update({ user_id, donor_reservation_id, question_id, option_id, manual_input })
             .eq('id', id)
             .select()
             .single();
@@ -74,6 +74,7 @@ module.exports = {
     async createBulk(user_id, answers) {
         const dataToInsert = answers.map(answer => ({
             user_id: user_id,
+            donor_reservation_id: answer.donorReservationId || null,
             question_id: answer.questionId,
             option_id: answer.optionId,
             manual_input: answer.manualInput || null

@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, onUnmounted } from 'vue';
 import { MyReservationPresenter } from '../presenters/MyReservationPresenter';
+import { updateUserEligibility } from '@/models/DonorReservationModel';
 
 const {
     myReservations,
@@ -16,6 +17,13 @@ const {
 } = MyReservationPresenter();
 
 let map = null;
+
+const restartScreening = async (reservationId) => {
+    if (confirm('Apakah Anda yakin ingin memulai ulang screening? Data screening sebelumnya akan dihapus.')) {
+        await cancelReservation(reservationId);
+        await updateUserEligibility('allowed');
+    }
+};
 
 const initializeMap = () => {
     if (map) {
@@ -46,15 +54,16 @@ const initializeMap = () => {
         if (userLocation.value.lat && userLocation.value.lng) {
             L.marker([userLocation.value.lat, userLocation.value.lng], { icon: userIcon })
                 .addTo(map)
-                .bindPopup('Lokasi Anda')
                 .openPopup();
         }
 
-        myReservations.value.forEach(reservation => {
-            L.marker([reservation.lat, reservation.lng], { icon: donorLocationIcon })
-                .addTo(map)
-                .bindPopup(`<b>${reservation.locationName}</b><br>${reservation.address}<br>${getFormattedDate(reservation.donationDate)} - ${getFormattedTime(reservation.donationTime)}`);
-        });
+        myReservations.value
+            .filter(reservation => reservation.screeningStatus === 'memenuhi')
+            .forEach(reservation => {
+                L.marker([reservation.lat, reservation.lng], { icon: donorLocationIcon })
+                    .addTo(map)
+                    .bindPopup(`<b>${reservation.locationName}</b><br>${reservation.address}<br>${getFormattedDate(reservation.donationDate)} - ${getFormattedTime(reservation.donationTime)}`);
+            });
     }, 100);
 };
 
@@ -71,6 +80,7 @@ onMounted(async () => {
 
                 await loadMyReservations();
                 initializeMap();
+                console.log('MyReservation component mounted', myReservations.value);
             },
             async (error) => {
                 console.warn('Geolocation error:', error);
@@ -82,6 +92,7 @@ onMounted(async () => {
         await loadMyReservations();
         initializeMap();
     }
+
 });
 
 onUnmounted(() => {
@@ -108,7 +119,7 @@ const donorLocationIcon = L.divIcon({
         <div class="d-flex align-items-center justify-content-center rounded-circle border border-white shadow" 
              style="width:32px;height:32px;background:#6c757d;">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" viewBox="0 0 24 24">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
             </svg>
         </div>
     `,
@@ -133,9 +144,57 @@ const donorLocationIcon = L.divIcon({
                             alt="">
                     </button>
                 </div>
-
                 <div class="reservation-content">
-                    <div class="reservations-grid" v-if="myReservations.length > 0">
+                    <div class="reservations-grid"
+                        v-if="myReservations.filter(r => r.screeningStatus === 'tidak-memenuhi').length > 0">
+                        <div class="reservation-card"
+                            v-for="reservation in myReservations.filter(r => r.screeningStatus === 'tidak-memenuhi')"
+                            :key="'non-qualifying-' + reservation.id">
+                            <div class="card-header">
+                                <div class="location-badge">
+                                    <i class="fas fa-hospital"></i>
+                                </div>
+                                <div class="card-title-section">
+                                    <h6 class="card-title">{{ reservation.locationName }}</h6>
+                                    <span class="status-badge status-not-qualified">
+                                        Belum Memenuhi Kriteria
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="warning-message">
+                                    <div class="warning-icon-msg">
+                                        <i class="fas fa-info-circle"></i>
+                                    </div>
+                                    <div class="warning-content">
+                                        <p class="warning-title">Anda belum memenuhi kriteria donor darah</p>
+                                        <p class="warning-description">
+                                            Silakan konsultasi dengan dokter atau petugas medis untuk
+                                            mendapatkan
+                                            informasi lebih lanjut mengenai persyaratan donor darah.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="action-buttons">
+                                    <button class="btn-custom btn-route" @click.stop="navigateToLocation(reservation)">
+                                        <i class="fas fa-directions"></i>
+                                        <span>Navigasi</span>
+                                    </button>
+
+                                    <button class="btn-custom btn-restart"
+                                        @click.stop="restartScreening(reservation.id)">
+                                        <i class="fas fa-redo"></i>
+                                        <span>Mulai Ulang Screening</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-else-if="!myReservations.filter(r => r.screeningStatus === 'tidak-memenuhi').length > 0"
+                        class="reservations-grid">
                         <div class="reservation-card" v-for="reservation in myReservations" :key="reservation.id">
                             <div class="card-header">
                                 <div class="location-badge">
@@ -205,9 +264,9 @@ const donorLocationIcon = L.divIcon({
                         </div>
                     </div>
 
-                    <div v-else class="empty-state">
+                    <div v-if="myReservations.length == 0" class="empty-state">
                         <div class="empty-icon">
-                            <i class="fas fa-calendar-times"></i>
+                            <i class="fas fa-calendar-check"></i>
                         </div>
                         <h3 class="empty-title">Belum ada reservasi donor</h3>
                         <p class="empty-description">Buat reservasi donor baru untuk membantu sesama</p>
@@ -250,7 +309,6 @@ const donorLocationIcon = L.divIcon({
     display: flex;
     align-items: center;
 }
-
 
 .header-title {
     font-size: 16px;
@@ -336,11 +394,16 @@ const donorLocationIcon = L.divIcon({
 
 .status-badge {
     padding: 8px 16px;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+
+.status-not-qualified {
+    background: #dc3545;
+    color: white;
 }
 
 .card-body {
@@ -403,6 +466,46 @@ const donorLocationIcon = L.divIcon({
     line-height: 1.4;
 }
 
+.warning-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: #FEE2E2;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.warning-icon-msg {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #B91C1C;
+    font-size: 1.2rem;
+}
+
+.warning-content {
+    flex: 1;
+}
+
+.warning-title {
+    font-weight: 600;
+    color: #B91C1C;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+}
+
+.warning-description {
+    color: #B91C1C;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
 .action-buttons {
     display: flex;
     gap: 12px;
@@ -441,9 +544,15 @@ const donorLocationIcon = L.divIcon({
     flex: 1;
 }
 
-.btn-primary-gradient {
-    background: #0984e3;
+.btn-restart {
+    background: #047857;
     color: white;
+    border: none;
+    flex: 1;
+}
+
+.btn-restart i {
+    margin-right: 6px;
 }
 
 .empty-state {
@@ -538,7 +647,7 @@ const donorLocationIcon = L.divIcon({
         flex-direction: column;
     }
 
-    .btn {
+    .btn-custom {
         justify-content: center;
     }
 
@@ -548,6 +657,23 @@ const donorLocationIcon = L.divIcon({
 
     .map-header {
         padding: 16px;
+    }
+
+    .warning-message {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .warning-title {
+        font-size: 0.9rem;
+    }
+
+    .warning-description {
+        font-size: 0.85rem;
+    }
+
+    .btn-restart span {
+        font-size: 0.85rem;
     }
 }
 
@@ -572,7 +698,7 @@ const donorLocationIcon = L.divIcon({
         padding: 20px;
     }
 
-    .btn {
+    .btn-custom {
         padding: 10px 16px;
         font-size: 13px;
     }

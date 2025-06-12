@@ -81,9 +81,6 @@ export const formatTime = (timeString) => {
 export const getStatusClass = (status) => {
     const statusClasses = {
         'on-screening': 'bg-warning text-dark',
-        'confirmed': 'bg-success text-white',
-        'completed': 'bg-primary text-white',
-        'cancelled': 'bg-secondary text-white',
         'pending': 'bg-success text-white',
     };
 
@@ -93,9 +90,6 @@ export const getStatusClass = (status) => {
 export const getStatusText = (status) => {
     const statusTexts = {
         'on-screening': 'Belum Menyelesaikan Reservasi',
-        'confirmed': 'Dikonfirmasi',
-        'completed': 'Selesai',
-        'cancelled': 'Dibatalkan',
         'pending': 'Menunggu Kedatangan',
     };
 

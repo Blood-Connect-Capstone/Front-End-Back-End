@@ -1,4 +1,4 @@
-name: Deploy API
+name: Deploy Fullstack App
 
 on:
   push:
@@ -22,9 +22,21 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-            cd project/dbs/Front-End-Back-End
+            cd ~/project/dbs/Front-End-Back-End
             git pull origin main
+
+            echo "Deploying Backend (Hapi.js)..."
             cd backend
             npm install
             npm run build || echo "No build step"
             pm2 restart bloodconnect-api || pm2 start npm --name "bloodconnect-api" -- start
+
+            echo "Deploying Frontend (Vue.js)..."
+            cd ../frontend
+            npm install
+            npm run build
+
+            pm2 delete bloodconnect || true
+            pm2 serve dist 3003 --spa --name "bloodconnect"
+
+            pm2 save

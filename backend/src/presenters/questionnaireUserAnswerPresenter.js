@@ -88,7 +88,9 @@ module.exports = {
                 error: err.message
             }).code(500);
         }
-    }, async delete(request, h) {
+    }, 
+    
+    async delete(request, h) {
         try {
             const { id } = request.params;
             await questionnaireUserAnswersModel.remove(id);

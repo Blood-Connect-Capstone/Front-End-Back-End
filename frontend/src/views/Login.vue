@@ -3,7 +3,7 @@
     <div class="login-container">
       <div class="login-header">
         <div class="navbar-brand">
-          <img class="logo" src="/src/assets/images/logo.svg" alt="Logo" />
+          <img class="logo" src="/assets/images/logo.svg" alt="Logo" />
           <span class="title">BloodConnect</span>
         </div>
         <h2>Masuk</h2>
@@ -14,12 +14,14 @@
         <div class="form-section">
           <div class="form-group">
             <label for="email">Alamat Email</label>
-            <input id="email" v-model="email" type="email" class="form-input" placeholder="Masukkan email Anda" required />
+            <input id="email" v-model="email" type="email" class="form-input" placeholder="Masukkan email Anda"
+              required />
           </div>
 
           <div class="form-group">
             <label for="password">Kata Sandi</label>
-            <input id="password" type="password" v-model="password" class="form-input" placeholder="Masukkan passowrd" required />
+            <input id="password" type="password" v-model="password" class="form-input" placeholder="Masukkan passowrd"
+              required />
           </div>
         </div>
 
@@ -173,10 +175,6 @@ export default {
   width: 100%;
   cursor: pointer;
   transition: background-color 0.3s ease;
-}
-
-.btn-login:hover {
-  background: #B91C1C;
 }
 
 .register-link {

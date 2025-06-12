@@ -39,11 +39,14 @@ export async function fetchQuestionsStage2() {
   }
 }
 
-export async function saveAnswer(answers) {
+export async function saveAnswer(answers, donorReservationId) {
   try {
     const user = await getCurrentUserWithProfile();
 
+    console.log('Saving answers:', answers, 'for reservation ID:', donorReservationId);
+
     const formattedAnswers = answers.map(answer => ({
+      donorReservationId: donorReservationId,
       questionId: answer.questionId,
       optionId: null,
       manualInput: answer.answer

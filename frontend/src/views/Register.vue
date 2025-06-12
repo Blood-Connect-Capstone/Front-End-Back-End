@@ -3,7 +3,7 @@
     <div class="register-container">
       <div class="register-header">
         <div class="navbar-brand">
-          <img class="logo" src="/src/assets/images/logo.svg" alt="Logo" />
+          <img class="logo" src="/assets/images/logo.svg" alt="Logo" />
           <span class="title">BloodConnect</span>
         </div>
         <h2>Buat Akun</h2>
